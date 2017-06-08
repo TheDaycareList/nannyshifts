@@ -1,0 +1,163 @@
+<Page loaded="loaded" actionBarHidden="true" navigatedTo="{{onNavigatedTo}}"  xmlns:drawer="nativescript-telerik-ui/sidedrawer"  xmlns:SettingsView="views/modals/settings">
+
+    <GridLayout height="100%">
+        <Image src="res://lightbg" stretch="aspectFill"></Image>
+        <GridLayout id="maingrid">
+            <drawer:RadSideDrawer id="drawer" drawerLocation="Right" >
+                <drawer:RadSideDrawer.mainContent>
+
+                    <GridLayout rows="20, 45, 1, *">
+                        <StackLayout height="20" style="background-color: #6700be;" />
+                        <GridLayout columns="100, *, 100" height="45" row="1">
+                            <Label class="fa" text="&#xf017;" col="1" horizontalAlignment="center" style="font-size: 35; color: #6700be;"/>
+                            <Label text="&#xf0c9;" class="fa" tap="{{showMenu}}" col="2" horizontalAlignment="right" marginRight="10"  style="font-size: 25; color: #6700be;"/>
+                        </GridLayout>
+                        <StackLayout style="height: 1; background-color: rgba(255,255,255,0.1);" row="2"></StackLayout>
+
+                        <TabView selectedIndexChanged="onSelectedIndexChanged" selectedColor="#30A9FF" row="3">
+                            <TabView.items>
+                                <TabViewItem title="This Week" iconSource="{{ selectedIndex == 0 ? 'res://shiftsicon_selected' : 'res://shiftsicon' }}">
+                                    <TabViewItem.view>
+                                        <GridLayout id="thisweek">
+                                            <StackLayout>
+                                                <ScrollView marginTop="0">
+                                                    <StackLayout orientation="vertical">
+                                                        <StackLayout class="shifts_header">
+                                                            <GridLayout columns="*, 50, 250, 50, *">
+                                                                <Label col="2" class="date" color="#333" text="{{header_text}}" />
+                                                            </GridLayout>
+                                                            <GridLayout columns="2*, 2*" rows="25, 25" marginTop="10" visibility="{{isLoading ? 'collapsed' : 'visible'}}">
+                                                                <Label text="HOURS" marginRight="5" class="shifts_top_info mont" horizontalAlignment="right" />
+                                                                <Label row="1" text="EARNED" marginRight="5" class="shifts_top_info mont" color="gray" horizontalAlignment="right" />
+                                                                <Label col="1" text="{{hours_worked + ' hours'}}" marginLeft="5" color="#333" class="shifts_top_info hours_worked mont" horizontalAlignment="left" />
+                                                                <Label col="1" row="1" text="{{'$' + total_earned}}" marginLeft="5" color="green" class="shifts_top_info earned mont" horizontalAlignment="left" />
+                                                            </GridLayout>
+                                                        </StackLayout>
+                                                        
+                                                        <ActivityIndicator busy="{{isLoading ? true : false}}" visibility="{{isLoading ? 'visible' : 'collapsed'}}" height="50" />
+                                                        <StackLayout visibility="{{isLoading ? 'collapsed' : 'visible'}}">
+
+                                                            <GridLayout rows="70" class="button_spinner" marginBottom="10" width="300" visibility="{{clocked_in ? 'collapsed' : 'visible'}}">
+                                                                <Button class="blueButtonRound" text="{{starting ? ' ' : ' Start Shift'}}" tap="startShift" />
+                                                                <ActivityIndicator busy="{{starting}}" />
+                                                            </GridLayout>
+
+                                                            <StackLayout visibility="{{shifts.length ? 'visible' : 'collapsed'}}">
+                                                                <Label class="sectionHead" color="gray" text="Shifts" />
+                                                                <StackLayout class="border" row="2" colSpan="2" />
+
+                                                                <Repeater items="{{shifts}}">
+                                                                    <Repeater.itemTemplate>
+                                                                        <GridLayout columns="*, 60" rows="auto, 1" class="{{!end_time ? 'today shift_item' : 'shift_item'}}" id="{{id}}" tap="showShift">
+                                                                            <StackLayout style.padding="10 5">
+                                                                                <Label text="{{display_date}}" color="gray" class="{{!end_time ? 'shift_date today_date' : 'shift_date'}}" />
+                                                                                <Label text="{{display_timing}}" color="#333" class="shift_time mont" textWrap="true" />
+                                                                                <Label text="{{hours_worked + ' HOURS'}}" class="hours_worked" color="gray" textWrap="true" />
+                                                                            </StackLayout>
+                                                                            <Button class="mont redButton" text="END" visibility="{{!end_time ? 'visible' : 'collapsed'}}" tap="endShift" col="1" rowSpan="2" style="" />
+                                                                            <StackLayout class="border" row="2" colSpan="2" />
+                                                                        </GridLayout>
+                                                                    </Repeater.itemTemplate>
+                                                                </Repeater>
+                                                            </StackLayout>
+                                                        </StackLayout>
+                                                                            
+                                                    </StackLayout>
+                                                </ScrollView>
+                                            </StackLayout>
+                                        </GridLayout>
+                                    </TabViewItem.view>
+                                </TabViewItem>
+                                <TabViewItem title="Shifts" iconSource="{{ selectedIndex == 1 ? 'res://photosicon_selected' : 'res://photosicon' }}">
+                                    <TabViewItem.view>
+                                        <GridLayout id="shifts">
+                                            <StackLayout>
+                                                <Label text="All shfits view goes here." textWrap="true" />
+                                            </StackLayout>
+                                        </GridLayout>
+                                    </TabViewItem.view>
+                                </TabViewItem>
+                                <TabViewItem title="Expenses" iconSource="{{ selectedIndex == 2 ? 'res://messagesicon_selected' : 'res://messagesicon' }}">
+                                    <TabViewItem.view>
+                                        <GridLayout id="expenses">
+                                            <StackLayout>
+                                                <Label text="Expenses go here." textWrap="true" />
+                                            </StackLayout>
+                                        </GridLayout>
+                                    </TabViewItem.view>
+                                </TabViewItem>
+                            </TabView.items>
+                        </TabView>
+                    </GridLayout>
+
+
+
+
+                </drawer:RadSideDrawer.mainContent>
+
+                <drawer:SideDrawer.drawerTransition><drawer:PushTransition/></drawer:SideDrawer.drawerTransition>
+                <drawer:RadSideDrawer.drawerContent>
+                    <GridLayout class="drawer-content" id="drawer_container" style.backgroundColor="#6700be">
+                        <GridLayout columns="15, *, 15">
+                            <Image src="res://vertshadow" height="100%" style="opacity: .2;" stretch="fill"/>
+                            <StackLayout col="1" marginTop="50">
+                                <ScrollView>
+                                    <StackLayout>
+                                        <GridLayout columns="30, *" rows="auto, 1">
+                                            <Label class="fa" text="&#xf017;" col="0" horizontalAlignment="center" style="font-size: 25; color: white; margin-bottom: 15;"/>
+                                            <Label text="Nanny Shifts" col="1" style="font-size: 25; color: white; margin-bottom: 15;"/>
+                                        </GridLayout>
+
+                                        <GridLayout rows="20, 1, auto">
+                                            <Label text="YOUR RATES" style="font-size: 11; color: white;" />
+                                            <StackLayout style="height: 1; background-color: rgba(255,255,255,0.2);" row="1" />
+                                            <StackLayout row="2">
+                                                <Label text="{{'Hourly Rate: $' + user.hourlyRate}}" style="color: white; margin-top: 10;" />
+                                                <Label text="{{'Overtime Rate: $' + user.overtimeRate}}" style="color: white; margin-top: 10;" />
+                                                <Button class="transBtn" text="Edit Rates" tap="{{editRates}}" style="margin-top: 10;" />
+                                            </StackLayout>
+                                        </GridLayout>
+                                        <StackLayout marginTop="40" />
+                                        <GridLayout rows="20, 1, auto">
+                                            <Label text="YOUR FAMILIES" style="font-size: 11; color: white;" />
+                                            <StackLayout row="2">
+                                                <Repeater items="{{ families }}" style="border-radius: 10;">
+                                                    <Repeater.itemsLayout>
+                                                        <StackLayout />
+                                                    </Repeater.itemsLayout>
+                                                    <Repeater.itemTemplate>
+                                                        <StackLayout style="background-color: rgba(255,255,255,0.7);">
+                                                            <GridLayout columns="*, 80" rows="1, 50" >
+                                                                <StackLayout colSpan="2" visibility="{{ isFirst ? 'collapsed' : 'visible' }}" style="height: 1; background-color: rgba(0,0,0,0.1);" />
+                                                                <Label row="1" col="0" text="{{name}}" style="margin-left: 5;" />
+                                                                <StackLayout orientation="horizontal" col="1" row="1" horizontalAlignment="right">
+                                                                    <Label text="&#xf044;" class="fa" style="font-size: 24; color: #6700be; margin-right: 15;" id="{{id}}" tap="{{$parents['Page'].editFamily}}" />
+                                                                    <Label text="&#xf057;" class="fa" style="font-size: 24; color: red;  margin-right: 15;" id="{{id}}" tap="{{$parents['Page'].removeFamily}}" />
+                                                                </StackLayout>
+                                                            </GridLayout>
+                                                        </StackLayout>
+                                                    </Repeater.itemTemplate>
+                                                </Repeater>
+                                                <Button class="transBtn" text="Add a Family" tap="{{addFamily}}" style="margin-top: 10;" />
+                                            </StackLayout>
+                                        </GridLayout>
+
+                                        <StackLayout marginTop="30" />
+
+                                        <GridLayout rows="1, 30, auto">
+                                            <StackLayout style="height: 1; background-color: rgba(255,255,255,0.2);" row="0" />
+                                            <StackLayout row="2">
+                                                <Button text="Log Out" class="transBtn" tap="{{kill}}" style="margin: 5 0;" />
+                                            </StackLayout>
+                                        </GridLayout>
+                                    </StackLayout>
+                                </ScrollView>
+                            </StackLayout>
+                        </GridLayout>
+                    </GridLayout>
+                </drawer:RadSideDrawer.drawerContent>
+            </drawer:RadSideDrawer>
+        </GridLayout>
+        <SettingsView:settings />
+    </GridLayout>
+</Page>

@@ -1,0 +1,19 @@
+<Page loaded="loaded" actionBarHidden="true">
+    <GridLayout height="100%">
+        <Image src="res://loginbg" stretch="aspectFill"></Image>
+        <GridLayout rows="*, auto, *">
+            <StackLayout row="1">
+                <StackLayout height="20"></StackLayout>
+                <!--<Image src="res://presonus_logo" class="logo" stretch="aspectFit" width="200" horizontalAlignment="center"></Image>-->
+                <TextField hint="{{loggingIn ? 'Enter your email...' : 'Enter an email...'}}" keyboardType="email" autocapitalizationType="none" text="{{email}}"></TextField>
+                <TextField hint="{{logginIn ? 'Enter your password...' : 'Enter a password...'}}" text="{{password}}" secure="true"></TextField>
+                <TextField hint="Re-enter your password..." text="{{password2}}" visibility="{{ loggingIn ? 'collapsed' : 'visible' }}" secure="true"></TextField>
+                <GridLayout class="spinnyBtn">
+                    <ActivityIndicator busy="{{loading}}" visibility="{{loading ? 'visible' : 'collapsed'}}" color="white" marginTop="10"></ActivityIndicator>
+                    <Button text="{{loggingIn ? 'Log In' : 'Sign Up'}}" tap="{{loggingIn ? login : signup}}"></Button>
+                </GridLayout>
+                <Button text="{{loggingIn ? 'Need an account? Sign up for free.' : 'Already have an account? Log in here.'}}" tap="{{toggleMethod}}" style="margin-top: 50; font-size: 15; font-weight: bold;" />
+            </StackLayout>
+        </GridLayout>
+    </GridLayout>
+</Page>

@@ -1,0 +1,10 @@
+<StackLayout>
+    <Label text="HOURLY RATE" style="font-size: 12; margin: 10 0 0 10;" />
+    <TextField id="hourly_rate" class="dark" text="{{user.hourlyRate}}" autocapitalizationType="words" placeholder="Enter your hourly rate..." />
+
+    <Label text="OVERTIME RATE" style="font-size: 12; margin: 10 0 0 10;" />
+    <TextField id="overtime_rate" class="dark" text="{{user.overtimeRate}}" autocapitalizationType="none" placeholder="Enter your overtime rate..." />
+
+    <Button class="purpleBtn" text="SAVE" tap="{{saveRates}}" style="margin-top: 40;" />
+</StackLayout>
+

@@ -1,0 +1,10 @@
+<StackLayout>
+    <Label text="NAME" style="font-size: 12; margin: 10 0 0 10;" />
+    <TextField id="family_name" class="dark" autocapitalizationType="words" placeholder="Enter a name for this family..." />
+
+    <Label text="EMAIL" style="font-size: 12; margin: 10 0 0 10;" />
+    <TextField id="family_email" class="dark" autocapitalizationType="none" placeholder="Enter an email for this family..." />
+    
+    <Button class="purpleBtn" text="SAVE" tap="{{saveFamily}}" style="margin-top: 40;" />
+</StackLayout>
+

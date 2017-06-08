@@ -1,0 +1,48 @@
+<Page loaded="loaded" actionBarHidden="true">
+    <GridLayout height="100%">
+        <Image src="res://loginbg" stretch="aspectFill"></Image>
+        <GridLayout rows="*, auto, *">
+            <StackLayout row="1">
+                <StackLayout height="20"></StackLayout>
+                <Label textWrap="true" text="Timecard makes it super simple to track your hours, expenses, and keep everybody on the same page. You can add multiple families, and the app does all the math for you." />
+                <Label textWrap="true" text="Enter all the families whose kids you care for, and we'll show you how we do it." />
+                <TextField hint="Enter your hourly rate..." keyboardType="number" text="{{hourlyRate}}"></TextField>
+                <TextField hint="Enter your overtime rate..." keyboardType="number" text="{{overtimeRate}}"></TextField>
+
+                <Label text="Your Families" />
+                <Repeater items="{{ families }}">
+                    <Repeater.itemsLayout>
+                        <StackLayout />
+                    </Repeater.itemsLayout>
+                        
+                    <Repeater.itemTemplate>
+                        <StackLayout>
+                            <StackLayout class="families_added">
+                                <Label text="{{name + ' ' + email}}" />
+                            </StackLayout>
+                            <StackLayout style="height: 1; background-color: rgba(0,0,0,0.1)" />
+                        </StackLayout>
+                    </Repeater.itemTemplate>
+                </Repeater>
+                <Button text="Add a Family" tap="{{showAddFamily}}" />
+
+                <GridLayout class="spinnyBtn">
+                    <ActivityIndicator busy="{{saving}}" visibility="{{saving ? 'visible' : 'collapsed'}}" color="white" marginTop="10"></ActivityIndicator>
+                    <Button text="Save" tap="{{saveRates}}"></Button>
+                </GridLayout>
+
+                <Button text="kill" tap="{{kill}}" />
+            </StackLayout>
+        </GridLayout>
+        <GridLayout id="add_family" rows="*, auto, *" visibility="{{ addingFamily ? 'visible' : 'collapsed' }}">
+            <StackLayout rowSpan="3" style="background-color: rgba(0,0,0,0.8);" />
+            <StackLayout style="background-color: white; margin: 0 10; border-radius: 10;" row="1">
+                <Label text="Add A Family" />
+                <TextField text="{{addingFamilyName}}" hint="Enter a family name (ex: The Coffins)" />
+                <TextField text="{{addingFamilyEmail}}" hint="Enter a contact email for this family." />
+                <Button text="Add" tap="{{addFamily}}" />
+            </StackLayout>
+            
+        </GridLayout>
+    </GridLayout>
+</Page>

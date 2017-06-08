@@ -1,0 +1,20 @@
+<GridLayout style="background-color: rgba(0,0,0,0.7);" visibility="{{ settingsShown ? 'visible' : 'collapsed' }}" id="settings_overlay_container">
+    <Label text="DROP TO DISMISS" verticalAlignment="top" id="dismiss_note" horizontalAlignment="center" style="color: white; font-size: 13; margin-top: 50;" opacity="0"/>
+    <StackLayout style="background-color: rgba(255,255,255,0.5); color: #333; margin: 30 5 -10 5; padding: 10px; border-radius: 10;" id="settings_container">
+        <GridLayout columns="100, *, 100" rows="40" class="modal_header">
+            <Button text="&#xf00d;" class="fa" col="2"  horizontalAlignment="right" tap="{{hideSettings}}" style="color: #6700be; font-size: 30;"/>            
+            <Label text="{{settingsTitle}}" class="section_header" col="1"  horizontalAlignment="center" style="color: #6700be; font-size: 20; font-weight: bold;" />
+        </GridLayout>
+        <StackLayout style="background-color: rgba(255,255,255,0.1); height: 1; margin-bottom: 20;"  />
+
+        <StackLayout id="settings_view">
+            <!-- populated with builder -->
+        </StackLayout>
+    </StackLayout>  
+
+    <GridLayout id="info_prompt_container" rows="*, auto, *" visibility="collapsed">
+    
+    </GridLayout>
+
+</GridLayout>
+

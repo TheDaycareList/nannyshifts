@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "noEmitHelpers": true,
+        "noEmitOnError": false
+    },
+    "exclude": [
+        "node_modules",
+        "platforms",
+        "**/*.aot.ts"
+    ],
+    "paths": {
+        "*": [
+            "./node_modules/tns-core-modules/*",
+            "./node_modules/*"
+        ]
+    }
+}
