@@ -173,10 +173,14 @@ export class ShiftService {
         return new Promise((resolve, reject) => { 
             if (uid) {
                 firebase.remove('/shifts/' + uid + '/' + id).then(result => {
-                    let shifts = JSON.parse(appSettings.getString('shifts'));
-                    delete shifts[id];
-                    appSettings.setString('shifts', JSON.stringify(shifts));
-                    resolve(result);
+                    // let shifts = JSON.parse(appSettings.getString('shifts'));
+                    // delete shifts[id];
+                    // appSettings.setString('shifts', JSON.stringify(shifts));
+                    // resolve(result);
+
+                    this.buildAppData(true).then(() => {
+                        resolve(result);
+                    })
                 });
             } else {
                 reject('Couldn\'t find the user record ID.');
@@ -189,13 +193,16 @@ export class ShiftService {
         return new Promise((resolve, reject) => { 
             if (uid) {
                 firebase.update('/shifts/' + uid + '/' + id, data).then(result => {
-                    let shifts = JSON.parse(appSettings.getString('shifts'));
-                    data.recentlyUpdated = true;
-                    for (let i in data) {
-                        shifts[id][i] = data[i];
-                    }
-                    appSettings.setString('shifts', JSON.stringify(shifts));
-                    resolve(result);
+                    // let shifts = JSON.parse(appSettings.getString('shifts'));
+                    // data.recentlyUpdated = true;
+                    // for (let i in data) {
+                    //     shifts[id][i] = data[i];
+                    // }
+                    // appSettings.setString('shifts', JSON.stringify(shifts));
+                    // resolve(result);
+                    this.buildAppData(true).then(() => {
+                        resolve(result);
+                    })
                 });
             } else {
                 reject('Couldn\'t find the user record ID.');
@@ -208,19 +215,22 @@ export class ShiftService {
         return new Promise((resolve, reject) => { 
             firebase.push('/shifts/' + uid, data).then(result => {
                 console.dir(result);
-                data.id = result.key;
-                let shift = this.buildShiftData(data);
+                // data.id = result.key;
+                // let shift = this.buildShiftData(data);
                 
-                if (appSettings.getString('shifts')) {
-                    let shifts = JSON.parse(appSettings.getString('shifts'));
-                    shifts[result.key] = shift;
-                    appSettings.setString('shifts', JSON.stringify(shifts));
-                } else {
-                    let shifts:any = {}
-                    shifts[result.key] = shift;
-                    appSettings.setString('shifts', JSON.stringify(shifts));
-                }
-                resolve(shift);
+                // if (appSettings.getString('shifts')) {
+                //     let shifts = JSON.parse(appSettings.getString('shifts'));
+                //     shifts[result.key] = shift;
+                //     appSettings.setString('shifts', JSON.stringify(shifts));
+                // } else {
+                //     let shifts:any = {}
+                //     shifts[result.key] = shift;
+                //     appSettings.setString('shifts', JSON.stringify(shifts));
+                // }
+                // resolve(shift);
+                this.buildAppData(true).then(() => {
+                    resolve(result);
+                })
             });
         })
     }

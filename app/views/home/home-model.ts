@@ -142,12 +142,6 @@ export class HomeModel extends Observable {
         console.log(JSON.parse(appSettings.getString('uid')))
     }
 
-    public sendTestEmail() {
-        userService.sendEmail("Welcome.", "Your nanny has added you as a family in Nanny Shifts, an app that helps nannies keep track of their hours and expenses. You dont' have to do anything, you will start receiving invoices when your nanny requests to be paid.", "Your nanny added you as a family on Nanny Shifts.").then(result => {
-            console.log('did it');
-        })
-    }
-
     public editRates() {
         this.showSettings('/views/components/editrates/editrates.xml');
         this.set('settingsTitle', 'Edit Rates');
@@ -412,12 +406,16 @@ export class HomeModel extends Observable {
             paid: false,
             date_created: moment().format()
         }
-        shiftService.createInvoice(args).then(result => {
-            this.hideSettings();
-            
-            this.processInvoices(JSON.parse(appSettings.getString('invoices')));    
-            
-        })
+        if (!args.shift_ids || !args.shift_ids.length) {
+            alert('Please select one or more shifts to include in this invoice.');
+        } else {
+            shiftService.createInvoice(args).then(result => {
+                this.hideSettings();    
+                this.processInvoices(JSON.parse(appSettings.getString('invoices')));    
+                
+            })
+        }
+        
     }
 
     public saveAndSendInvoice() {
@@ -435,12 +433,16 @@ export class HomeModel extends Observable {
             date_created: moment().format(),
             sent: true
         }
-        shiftService.createInvoice(args).then((result:any) => {
-            this.hideSettings();
-            this.sendInvoice(result.key)
-            this.processInvoices(JSON.parse(appSettings.getString('invoices')));    
-            
-        })
+        if (!args.shift_ids || !args.shift_ids.length) {
+            alert('Please select one or more shifts to include in this invoice.');
+        } else {
+            shiftService.createInvoice(args).then((result:any) => {
+                this.hideSettings();
+                this.sendInvoice(result.key)
+                this.processInvoices(JSON.parse(appSettings.getString('invoices')));      
+            })
+        }
+        
     }
 
     public sendInvoice(invoice_id, invoice?, resending?) {
@@ -526,6 +528,8 @@ export class HomeModel extends Observable {
                         if (result == 'Do it.') {
                             shiftService.deleteShift(shift.id).then(result => {
                                 this.processShifts(JSON.parse(appSettings.getString('shifts')));
+                                this.processInvoices(JSON.parse(appSettings.getString('invoices')));
+
                             })
                         }
                     })
@@ -810,12 +814,14 @@ export class HomeModel extends Observable {
         if (editingShift.id) {
             shiftService.updateShift(editingShift.id, args).then(result => {
                 this.processShifts(JSON.parse(appSettings.getString('shifts')));
+                this.processInvoices(JSON.parse(appSettings.getString('invoices')));
                 if (editingShift.id == MyModel.get('clockedIn').id && args.end_time) MyModel.set('clockedIn', false);
                 this.hideSettings();
             })
         } else {
             shiftService.addShift(args).then(result => {
                 this.processShifts(JSON.parse(appSettings.getString('shifts')));
+                this.processInvoices(JSON.parse(appSettings.getString('invoices')));
                 this.hideSettings();
             })
         }
@@ -1029,7 +1035,7 @@ export class HomeModel extends Observable {
         })
 
         let weeks = {};
-
+        this.set('addedShiftsMap', {});
 
         // calculate hours worked and money earned.
         let thisWeekMinutesWorked = 0;
@@ -1225,6 +1231,7 @@ export class HomeModel extends Observable {
         while (this.invoices.length) this.invoices.pop();
         let user = JSON.parse(appSettings.getString('userData'));
         //let invoicesArray = new ObservableArray();
+        this.set('invoicedShiftsByFamilyMap', {});
         for (var i in invoices) {
             invoices[i].id = i;
             invoices[i].shifts = [];
