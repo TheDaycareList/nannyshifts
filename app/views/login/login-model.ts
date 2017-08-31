@@ -25,6 +25,31 @@ export class LoginModel extends Observable {
         console.log('Logging in: ' + this.loggingIn);
     }
 
+    public getUserByEmail() {
+        console.log('hello');
+        let options:firebase.QueryOptions = {
+            singleEvent: true,
+            orderBy: {
+                type: firebase.QueryOrderByType.CHILD,
+                value: 'email'
+            },
+            range: {
+                type: firebase.QueryRangeType.EQUAL_TO,
+                value: 'dave+2@davecoffin.com'
+            }
+        }
+
+        firebase.query(
+            queryResult => {
+                if (queryResult.value) {
+                    console.log(JSON.stringify(queryResult.value))
+                }
+            }, 
+            '/users/', 
+            options
+        );
+    }
+
     public signup() {
         console.log('signup');
         if (this.email && this.password) {
@@ -68,12 +93,14 @@ export class LoginModel extends Observable {
         if (this.email && this.password) {
             firebase.login({
                 type: firebase.LoginType.PASSWORD,
-                email: this.email,
-                password: this.password
+                // passwordOptions: {
+                    email: this.email,
+                    password: this.password
+                // }
             }).then((result) => {
                 this.userService.getUser(result.uid).then(user => {
                     if (user) {
-                        console.dump(user);
+                        console.dir(user);
                         appSettings.setString('uid', JSON.stringify(result.uid));
                         if (!user.hourlyRate) {
                             frame.topmost().navigate({

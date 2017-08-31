@@ -1,0 +1,73 @@
+// /shifts
+{
+    "UID_FOR_USER_A": {
+        "vnurh899runn": {
+            "start_time": "2017-06-08 08:00:00",
+            "end_time": "2017-06-08 16:00:00",
+            "owed": 120, 
+            "earned": 110 
+        },
+        "f35gn459jg093ij": {
+            "start_time": "2017-06-09 08:00:00",
+            "end_time": "2017-06-09 16:00:00",
+            "owed": 120, 
+            "earned": 120 
+        }
+    },
+    "UID_FOR_USER_B": {
+        "54gwtsbtghrh": {
+            "start_time": "2017-06-08 08:00:00",
+            "end_time": "2017-06-08 16:00:00",
+            "owed": 120, 
+            "earned": 110
+        },
+        "sb46gs4htrh": {
+            "start_time": "2017-06-09 08:00:00",
+            "end_time": "2017-06-09 16:00:00",
+            "owed": 120, 
+            "earned": 120 
+        }
+    },
+}
+
+
+
+// /family_contributions
+{
+    "fj5305ng350jg035n": {
+        "family_id": "9gj350ng35iong3",
+        "shift_id": "vnurh899runn",
+        "contribution": 60
+    },
+    "98hvb9tu3n9vf3vref": {
+        "family_id": "98h23498fhjssdfn",
+        "shift_id": "f35gn459jg093ij",
+        "contribution": 50
+    },
+    "fj5305ng350jg035n": {
+        "family_id": "9gj350ng35iong3",
+        "shift_id": "vnurh899runn",
+        "contribution": 60
+    },
+    "98hvb9tu3n9vf3vref": {
+        "family_id": "98h23498fhjssdfn",
+        "shift_id": "f35gn459jg093ij",
+        "contribution": 60
+    },
+}
+
+// /invoices
+{
+    "ij53ng39i5i0ng": {
+        "shift_ids": ["vnurh899runn", "f35gn459jg093ij"],
+        "family_id": "9gj350ng35iong3",
+        "total": 120,
+        "paid": false
+    },
+    "ij53ng39i5i0ng": {
+        "shift_ids": ["vnurh899runn", "f35gn459jg093ij"],
+        "family_id": "98h23498fhjssdfn",
+        "total": 110,
+        "paid": false
+    }
+}

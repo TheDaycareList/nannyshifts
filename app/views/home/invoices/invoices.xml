@@ -1,0 +1,25 @@
+<StackLayout>
+    <!-- <Button tap="{{removeInvoices}}" text="remove" />
+    <Button tap="{{addInvoice}}" text="add" />
+    <Button tap="{{setInvoices}}" text="set" />
+    <Button tap="{{refreshInvoices}}" text="refresh" />
+    <Label text="{{heytest}}" /> -->
+    <ListView items="{{ invoices }}" itemTap="{{invoiceOptions}}" height="100%" separatorColor="transparent" style="background-color: transparent; height: 100%;">
+        <ListView.itemTemplate>
+            <GridLayout class="invoice_item" columns="*, 90, 30">
+                <StackLayout>
+                    <Label text="{{family_name}}" class="invoice_header"></Label>
+                    <Label text="{{'Created on ' + date_created_pretty}}" class="invoice_subheader"></Label>
+                    <StackLayout orientation="horizontal">
+                        <Label text="{{sent ? 'SENT' : 'NOT SENT'}}" width="70" class="{{sent ? 'tag sent_tag' : 'tag notsent_tag'}}" style="text-align: center;"></Label>
+                        <Label text="{{paid ? 'PAID' : 'UNPAID'}}" width="70" class="{{paid ? 'tag paid_tag' : 'tag unpaid_tag'}}" style="text-align: center;"></Label>
+                    </StackLayout>
+                </StackLayout>
+                <Label col="1" text="{{'$' + total}}"></Label>
+                <Label col="2" text="&#xf054;" class="fa" horizontalAlignment="right" visibility="{{ loading ? 'collapsed' : 'visible' }}" marginRight="5" style="color: #6700be;"></Label>
+                <ActivityIndicator col="2" color="#6700be" busy="{{loading}}" marginRight="5" horizontalAlignment="right" />
+            </GridLayout>
+        </ListView.itemTemplate>
+    </ListView>
+</StackLayout>
+

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "664808733108",
+    "firebase_url": "https://nanny-shifts.firebaseio.com",
+    "project_id": "nanny-shifts",
+    "storage_bucket": "nanny-shifts.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664808733108:android:68cadc79b3288408",
+        "android_client_info": {
+          "package_name": "org.nativescript.nannyshifts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "664808733108-28tltkuhr95f4dsjti9biqbkcq3vbken.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDakoul6Pk-DZsiogNFTZgjo2m1McFRBq4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

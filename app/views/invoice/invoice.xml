@@ -1,0 +1,21 @@
+<Page loaded="loaded" actionBarHidden="true"  xmlns="http://schemas.nativescript.org/tns.xsd">
+    <GridLayout>
+        <Image src="res://loginbg" stretch="aspectFill"></Image>
+        <StackLayout>
+            <GridLayout columns="100, *, 100" marginTop="20" height="45" row="1">
+                <Button text="&#xf053;" class="fa" tap="{{goback}}" col="0" horizontalAlignment="left" marginLeft="10"  style="font-size: 25; color: #6700be;"/>
+                <Label class="fa" text="&#xf017;" col="1" horizontalAlignment="center" style="font-size: 35; color: #6700be;"/>
+                <Label text="&#xf0c9;" class="fa" tap="{{showMenu}}" col="2" horizontalAlignment="right" marginRight="10"  style="font-size: 25; color: #6700be;"/>
+            </GridLayout>
+            <GridLayout height="100%">
+                
+                <GridLayout rows="*, auto, *">
+                    <StackLayout row="1">
+                        <Label text="hi" />
+                    </StackLayout>
+                </GridLayout>
+            </GridLayout>    
+        </StackLayout>
+    </GridLayout>
+    
+</Page>

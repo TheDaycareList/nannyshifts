@@ -1,0 +1,56 @@
+<StackLayout>
+    <ScrollView id="settings_scroller" scrollEvent="{{settingsScroll}}">
+        <StackLayout>
+            <Label text="SHIFT DETAILS" class="setting_section_header" horizontalAlignment="center" />
+            <Label class="note" text="(Tap to Edit)" marginBottom="10" marginTop="5" horizontalAlignment="center" />
+            <GridLayout columns="1*, 2*" rows="auto">
+                <Label text="Start Date " horizontalAlignment="right" style="color: gray;" />
+                <Label col="1" text="{{editingShiftStartDate}}"  tap="{{changeShiftStartDate}}" style="color: #6700be; font-weight: bold; padding: 5 10; margin: 5 0;"/>
+            </GridLayout>
+            <GridLayout columns="1*, 2*" rows="auto">
+                <Label text="Start Time " horizontalAlignment="right" style="color: gray;" />
+                <Label col="1" text="{{editingShiftStartTime}}" tap="{{changeShiftStartTime}}" style="color: #6700be; font-weight: bold; padding: 5 10; margin: 5 0;"/>
+            </GridLayout>
+            <GridLayout columns="1*, 2*" rows="auto">
+                <Label text="End Date " horizontalAlignment="right" style="color: gray;" />
+                <Label col="1" text="{{editingShiftEndDate}}" tap="{{changeShiftEndDate}}" style="color: #6700be; font-weight: bold; padding: 5 10; margin: 5 0;"/>
+            </GridLayout>
+            <GridLayout columns="1*, 2*" rows="auto">
+                <Label text="End Time " horizontalAlignment="right" style="color: gray;" />
+                <Label col="1" text="{{editingShiftEndTime}}" tap="{{changeShiftEndTime}}" style="color: #6700be; font-weight: bold; padding: 5 10; margin: 5 0;"/>
+            </GridLayout>
+            <GridLayout columns="1*, 2*" rows="auto">
+                <Label text="Hours Worked" horizontalAlignment="right" style="color: gray;" />
+                <Label col="1" text="{{endShiftTotalWorked}}" textWrap="true" style="font-weight: bold; padding: 5 10; margin: 5 0;"/>
+            </GridLayout>
+            <GridLayout columns="1*, 2*" rows="auto, auto">
+                <Label text="Total Earned" horizontalAlignment="right" style="color: gray;" />
+                <Label col="1" text="{{endShiftTotalEarned}}" style="font-weight: bold; padding: 5 10; margin: 5 0;"/>
+                <Label col="1" row="1" class="note" text="{{'Includes $' + endShiftOvertimeEarned + ' overtime pay.'}}" visibility="{{ endShiftOvertimeEarned ? 'visible' : 'collapsed' }}" style="padding: 0 10;" />
+            </GridLayout>
+            <StackLayout margin="10 0;" />
+
+            <Label text="CONTRIBUTIONS" class="setting_section_header" horizontalAlignment="center" />
+            <Label class="note" text="(Tap to Edit)" marginBottom="10" marginTop="5" horizontalAlignment="center" />
+            <Repeater items="{{ families }}" style="border-radius: 10;">
+                <Repeater.itemsLayout>
+                    <StackLayout />
+                </Repeater.itemsLayout>
+                <Repeater.itemTemplate>
+                    <StackLayout>
+                        <GridLayout columns="1*, 2*" rows="auto">
+                            <Label text="{{name}}" horizontalAlignment="right" style="color: gray;" />
+                            <TextField class="plain" col="1" text="{{contribution}}" id="{{'contribution_' + id}}" style="color: #6700be; font-weight: bold;" />
+                        </GridLayout>
+                    </StackLayout>
+                </Repeater.itemTemplate>
+            </Repeater>
+            <GridLayout columns="1*, 2*" rows="auto">
+                <Label text="Final Total: " horizontalAlignment="right" style="color: gray;" />
+                <Label col="1" text="{{endShiftFinalTotal}}" style="font-weight: bold; padding: 10 10; margin: 5 0; color: green;"/>
+            </GridLayout>
+            <Button class="purpleBtn" text="SAVE" tap="{{saveShift}}" style="margin-top: 40; margin-bottom: 50;" />
+        </StackLayout>        
+    </ScrollView>
+</StackLayout>
+

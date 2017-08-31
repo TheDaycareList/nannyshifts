@@ -1,0 +1,37 @@
+<StackLayout>
+    <ScrollView id="settings_scroller" scrollEvent="{{settingsScroll}}">
+        <StackLayout id="invoice_creator">
+            <GridLayout columns="1*, 2*" rows="auto" marginTop="20">
+                <Label text="Family " horizontalAlignment="right" style="color: gray;" />
+                <Label col="1" text="{{selectedFamilyToInvoice ? selectedFamilyToInvoice.name : 'Choose...'}}" tap="{{chooseFamilyToInvoice}}" style="color: #6700be; font-weight: bold; padding: 5 10; margin: 5 0;"/>
+            </GridLayout>
+            <Label visibility="{{ selectedFamilyToInvoice ? 'collapsed' : 'visible' }}" textWrap="true" style="color: gray; font-size: 13; margin: 20" text="Choose which family you'd like to create an invoice for, and then select which shifts to include in the invoice." />
+            <StackLayout visibility="{{selectedFamilyToInvoice ? 'visible' : 'collapsed'}}" marginBottom="100">
+                <Label text="Shifts to Invoice" marginTop="30" horizontalAlignment="center" style="color: gray;" />
+                <Label text="This list contains only completed shifts that have not been invoiced for the selected family." style="color: gray; font-size: 13; margin: 5; text-align: center;" textWrap="true" />
+                <Repeater items="{{ uninvoicedShifts }}">
+                    <Repeater.itemsLayout>
+                        <StackLayout />
+                    </Repeater.itemsLayout>
+                    <Repeater.itemTemplate>
+                        <GridLayout class="uninvoiced_shift selected" id="{{id}}" tap="{{$parents['Page'].unselectUninvoicedShift}}" columns="40, *, 100" rows="auto, auto">
+                             <Label text="&#xf058;" horizontalAlignment="center" class="fa checked" style="color: green;" rowSpan="2" /> 
+                            <Label text="&#xf10c;" horizontalAlignment="center" class="fa unchecked" style="color: gray;" rowSpan="2" />
+                            <Label text="{{display_date}}" class="date" col="1" />
+                            <Label text="{{display_timing}}" class="time" col="1" row="1" />
+                            <Label text="{{'$' + selected_family_contribution}}" rowSpan="2" col="2" class="earned" />
+                        </GridLayout>
+                    </Repeater.itemTemplate>
+                </Repeater>
+                <GridLayout columns="*, 100" marginTop="10">
+                    <Label text="Invoice Total: " style="margin-right: 10; text-align: right;" />
+                    <Label text="{{'$' + invoiceTotal}}" style="font-weight: bold; color: green;" col="1"/>
+                </GridLayout>
+                <Button class="purpleBtn" text="{{'Save and send to ' + selectedFamilyToInvoice.name + '.'}}" tap="{{saveAndSendInvoice}}" style="margin-top: 40; margin-bottom: 20;" />    
+                <Button class="transBtn solid" text="Save, but don't send yet." tap="{{saveInvoice}}" style="margin-bottom: 50;" />    
+            </StackLayout>
+            
+        </StackLayout>
+    </ScrollView>
+</StackLayout>
+

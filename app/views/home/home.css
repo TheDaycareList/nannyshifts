@@ -13,6 +13,13 @@ TextField {
     color: white;
 }
 
+TextField.plain {
+    padding: 5 10;
+    margin: 5 0;
+    color: #333;
+    background-color: transparent;
+}
+
 .spinnyBtn Button {
     border-color: white;
     border-width: 2;
@@ -45,4 +52,62 @@ TextField.small {
 
 TextField.dark {
     color: #333;
+}
+
+
+TabView {
+    tab-text-color: gray;
+    /* tab-background-color: #6700be;; */
+    selected-tab-text-color: #6700be;
+    android-selected-tab-highlight-color: #6700be;; 
+}
+
+#invoice_creator .uninvoiced_shift {
+    background-color: rgba(255,255,255,0.4);
+    padding: 5 0;
+    margin: 2 0;
+    border-radius: 3;
+}
+
+#invoice_creator .uninvoiced_shift .date {
+    font-size: 15;
+}
+
+#invoice_creator .uninvoiced_shift .time {
+    font-size: 13;
+    color: gray;
+}
+
+#invoice_creator .uninvoiced_shift .unchecked {
+    visibility: visible;
+}
+
+#invoice_creator .uninvoiced_shift .checked {
+    visibility: collapse;
+}
+
+#invoice_creator .uninvoiced_shift.selected .unchecked {
+    visibility: collapse;
+}
+
+#invoice_creator .uninvoiced_shift.selected .checked {
+    visibility: visible;
+}
+
+
+/* 
+#invoice_creator .uninvoiced_shift.selected .unchecked {
+    opacity: 0;
+}
+
+#invoice_creator .uninvoiced_shift.selected .unchecked {
+    opacity: 0;
+} */
+
+#invoice_creator .uninvoiced_shift .earned {
+    color: gray;
+}
+
+#invoice_creator .uninvoiced_shift.selected .earned {
+    color: green;
 }

@@ -1,0 +1,39 @@
+<StackLayout loaded="{{allShiftsLoaded}}">
+    <Label text="{{heytest}}" />
+    <ActivityIndicator busy="{{isLoading ? true : false}}" visibility="{{isLoading ? 'visible' : 'collapsed'}}" height="50" />
+    <ListView items="{{ sectionedShifts }}" itemTemplateSelector="header ? 'header' : 'shift'" itemTap="{{$parents['Page'].shiftOptions}}" loaded="onLoaded" separatorColor="transparent" itemLoading="onItemLoading" style="background-color: transparent; height: 100%;">
+        <ListView.itemTemplates>
+            <template key="header">
+                <StackLayout class="week_header">
+                    <GridLayout columns="*" rows="25, auto" class="week_header_data">
+                        <Label text="{{title}}" class="week_title" />
+                        <StackLayout row="1">
+                            <Label text="{{overtime_earned ? (time_worked + ' • $' + total_earned + ' (Includes ' + '$' + overtime_earned + ' OT)') : time_worked + ' • $' + total_earned}}" textWrap="true" class="stats" />
+                        </StackLayout>
+                    </GridLayout>
+                </StackLayout>
+            </template>
+            <template key="shift">
+                <GridLayout class="sectioned_shift_item" columns="*">
+                    <StackLayout>
+                        <Label text="{{title + ' from ' + display_hours}}" textWrap="true" class="title" />
+                        <Label text="{{time_worked + ' • $' + total_earned}}" class="start_end" />
+                        <Label text="{{'Invoiced: ' + invoiced_families_string}}" textWrap="true" class="invoiced_text" visibility="{{ invoiced ? 'visible' : 'collapsed' }}"/>    
+                        <Label text="{{'Not Invoiced: ' + uninvoiced_families_string}}" textWrap="true" class="uninvoiced_text" visibility="{{ uninvoiced_families_string ? 'visible' : 'collapsed' }}"/>    
+                    </StackLayout>
+                </GridLayout>
+            </template>
+        </ListView.itemTemplates>
+    </ListView>
+    <!--<Repeater items="{{ sectionedShifts }}">
+        <Repeater.itemsLayout>
+            <StackLayout />
+        </Repeater.itemsLayout>
+        <Repeater.itemTemplate>
+            <StackLayout>
+                <Label text="{{title}}"/>
+            </StackLayout>
+        </Repeater.itemTemplate>
+    </Repeater>-->
+</StackLayout>
+

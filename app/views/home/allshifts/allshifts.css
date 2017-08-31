@@ -1,0 +1,50 @@
+.week_header {
+    padding: 30 5 5 5;
+}
+
+.week_header .week_title {
+    font-weight: bold;
+}
+
+.week_header .stats {
+    font-size: 14;
+    color: #6700be;
+}
+.sectioned_shift_item {
+    padding: 10 5;
+    background-color: rgba(255,255,255,0.5);
+    margin-bottom: 2;
+}
+
+.sectioned_shift_item .title {
+    font-size: 15;
+    color: #333;
+}
+
+.sectioned_shift_item .start_end {
+    font-size: 13;
+    color: gray;
+    margin-top: 4;
+}
+
+.sectioned_shift_item .invoiced_text { 
+    font-size: 13;
+    color: green;
+    margin-top: 4;
+}
+
+.sectioned_shift_item .uninvoiced_text { 
+    font-size: 13;
+    color: gray;
+    margin-top: 4;
+}
+
+.invoiced_tag {
+    background-color: green;
+    border-radius: 5;
+    color: white;
+    font-size: 10;
+    text-align: center;
+    font-weight: bold;
+    height: 20;
+}

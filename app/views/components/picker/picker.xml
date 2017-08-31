@@ -1,0 +1,13 @@
+<GridLayout rows="*, auto, *" columns="20, *, 20" visibility="{{ picking ? 'visible' : 'collapsed' }}">
+    <StackLayout id="picker_dimmer" style="background-color: rgba(0,0,0,0.6);" rowSpan="3" colSpan="3"/>
+    <StackLayout style="background-color: white; border-radius: 20;" row="1" col="1" id="picker_holder">
+        <GridLayout rows="50" columns="70, *, 70" style="background-color: #6700be;">
+            <Button style="color: white; font-weight: bold; margin-left: 10; color: #d9adff;" text="Cancel" tap="{{pickerCancel}}" />
+            <Label style="color: white; font-weight: bold; margin-left: 10;" text="{{pickerTitle ? pickerTitle : ''}}" col="1" horizontalAlignment="center" />
+            <Button style="color: white; font-weight: bold; margin-right: 10; color: #d9adff;" horizontalAlignment="right" col="2" text="{{pickerDoneText ? pickerDoneText : 'Done'}}" tap="{{pickerDone}}" />
+        </GridLayout>
+        <TimePicker hour="{{pickerHour}}" minute="{{pickerMinute}}" id="timepicker" visibility="{{ picking == 'time' ? 'visible' : 'collapsed' }}"></TimePicker>
+        <ListPicker items="{{ pickerItems }}" id="listpicker" visibility="{{ picking == 'list' ? 'visible' : 'collapsed' }}"></ListPicker>
+        <DatePicker day="{{endDateDay}}" month="{{endDateMonth}}" year="{{endDateYear}}" id="datepicker" visibility="{{ picking == 'date' ? 'visible' : 'collapsed' }}"></DatePicker>
+    </StackLayout>
+</GridLayout>

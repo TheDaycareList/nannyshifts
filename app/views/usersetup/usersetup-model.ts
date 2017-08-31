@@ -59,7 +59,7 @@ export class UserSetup extends Observable {
             this.userService.getUser(uid).then(() => {
                 this.set('addingFamilyName', '');
                 this.set('addingFamilyEmail', '');
-                console.dump(JSON.parse(appSettings.getString('userData')));
+                console.dir(JSON.parse(appSettings.getString('userData')));
                 this.set('addingFamily', false)
             });
         });

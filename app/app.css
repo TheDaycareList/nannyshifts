@@ -27,15 +27,34 @@ refer to http://docs.nativescript.org/ui/theme.
 .transBtn {
     background-color: rgba(255,255,255,0.2);
     color: #e5c7ff;
-    padding: 5 0;
+    padding: 10 0;
     border-radius: 6;
     font-weight: bold;
+}
+
+.transBtn.solid {
+    color: #6700be;
 }
 
 .purpleBtn {
     background-color: #6700be;
     color: white;
-    padding: 5 0;
+    padding: 10 0;
     border-radius: 6;
     font-weight: bold;
+}
+
+.setting_section_header {
+    font-size: 13; 
+    background-color: rgba(255,255,255,0.2); 
+    padding: 5; 
+    font-weight: bold; 
+    color: gray; 
+    width: 100%; 
+    text-align: center;
+}
+
+.note {
+    font-size: 12;
+    color: gray;
 }

@@ -1,0 +1,45 @@
+<GridLayout id="thisweek" xmlns:PullRefresh="nativescript-pulltorefresh" xmlns:lv="nativescript-telerik-ui/listview">
+    <StackLayout>
+        <PullRefresh:PullToRefresh refresh="{{refreshData}}">
+            <ScrollView marginTop="0" height="100%">
+                <StackLayout orientation="vertical">
+                    <StackLayout class="shifts_header">
+                        <GridLayout columns="*, 50, 250, 50, *">
+                            <Label col="2" class="date" color="#333" text="{{header_text}}" tap="{{showEndShift}}" />
+                        </GridLayout>
+                        <StackLayout marginTop="10" visibility="{{isLoading ? 'collapsed' : 'visible'}}">
+                            <Label text="{{hours_worked}}" color="#333" class="shifts_top_info hours_worked mont" horizontalAlignment="center" />
+                            <Label text="{{'$' + total_earned}}" color="green" class="shifts_top_info earned mont" horizontalAlignment="center" />
+                        </StackLayout>
+                    </StackLayout>
+                    <ActivityIndicator busy="{{isLoading ? true : false}}" visibility="{{isLoading ? 'visible' : 'collapsed'}}" height="50" />
+                    <StackLayout visibility="{{isLoading ? 'collapsed' : 'visible'}}">
+                        <Label text="You haven't started any shifts yet this week." style="color: gray; padding: 10; margin-top: 50; margin-bottom: 40;" horizontalAlignment="center" visibility="{{ thisWeek.length ? 'collapsed' : 'visible' }}" />
+                        <GridLayout rows="40" class="button_spinner" marginBottom="10" marginTop="20" width="300" visibility="{{clockedIn ? 'collapsed' : 'visible'}}">
+                            <Button class="purpleBtn" text="{{starting ? ' ' : ' Start Shift'}}" tap="{{showStartShift}}" />
+                            <ActivityIndicator busy="{{starting}}" />
+                        </GridLayout>
+                        <StackLayout>
+                            <Label class="sectionHead" color="gray" visibility="{{ thisWeek.length ? 'visible' : 'collapsed' }}" horizontalAlignment="center" marginTop="20" marginBottom="5" text="Shifts" />
+                            <StackLayout class="border" row="2" colSpan="2" />
+                            <Repeater items="{{thisWeek}}">
+                                <Repeater.itemTemplate>
+                                    <GridLayout columns="*, 60" rows="auto, 1" class="{{!end_time ? 'today shift_item' : 'shift_item'}}" id="{{id}}">
+                                        <StackLayout style.padding="10 5">
+                                            <Label text="{{display_date}}" class="{{!end_time ? 'shift_date today_date' : 'shift_date'}}" />
+                                            <Label text="{{display_timing}}" color="#333" class="shift_time mont" textWrap="true" />
+                                            <Label text="{{time_worked}}" class="hours_worked" color="gray" textWrap="true" />
+                                        </StackLayout>
+                                        <Button class="endButton" text="END" visibility="{{!end_time ? 'visible' : 'collapsed'}}" id="{{id}}" tap="{{$parents['Page'].showEditShift}}" col="1" rowSpan="2" style="" />
+                                        <Button class="editButton" text="EDIT" visibility="{{!end_time ? 'collapsed' : 'visible'}}" id="{{id}}" tap="{{$parents['Page'].showEditShift}}" col="1" rowSpan="2" style="color: #6700be;" />
+                                        <StackLayout class="border" row="2" colSpan="2" />
+                                    </GridLayout>
+                                </Repeater.itemTemplate>
+                            </Repeater>
+                        </StackLayout>
+                    </StackLayout>
+                </StackLayout>
+            </ScrollView>
+        </PullRefresh:PullToRefresh>
+    </StackLayout>
+</GridLayout>

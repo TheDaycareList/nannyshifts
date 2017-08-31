@@ -1,0 +1,33 @@
+.shift_item {
+    background-color: rgba(255,255,255,0.5);
+    margin-bottom: 2;
+}
+
+.shift_item .shift_date {
+    font-size: 12;
+    margin-bottom: 2;
+    color: gray;
+}
+
+.shift_item .shift_date.today_date {
+    color: #6700be;
+    font-weight: bold;
+    
+}
+
+.shift_item .hours_worked {
+    font-size: 14;
+    margin-top: 5;
+}
+
+.endButton {
+    background-color: #6700be;
+    color: white; 
+    font-weight: bold;
+}
+
+.editButton {
+    background-color: rgba(255,255,255,0.2);
+    color: #6700be; 
+    font-weight: bold;
+}
