@@ -3,7 +3,7 @@
     <TextField id="family_name" class="dark" autocapitalizationType="words" text="{{name}}" placeholder="Enter a name for this family..." />
 
     <Label text="EMAIL" style="font-size: 12; margin: 10 0 0 10;" />
-    <TextField id="family_email" class="dark" autocapitalizationType="none" text="{{email}}" placeholder="Enter an email for this family..." />
+    <TextField id="family_email" class="dark" autocapitalizationType="none" autocorrect="false" text="{{email}}" placeholder="Enter an email for this family..." />
     
     <Button class="purpleBtn" text="SAVE" tap="{{saveFamily}}" style="margin-top: 40;" />
 </StackLayout>

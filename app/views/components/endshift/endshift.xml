@@ -30,25 +30,28 @@
             </GridLayout>
             <StackLayout margin="10 0;" />
 
-            <Label text="CONTRIBUTIONS" class="setting_section_header" horizontalAlignment="center" />
-            <Label class="note" text="(Tap to Edit)" marginBottom="10" marginTop="5" horizontalAlignment="center" />
-            <Repeater items="{{ families }}" style="border-radius: 10;">
-                <Repeater.itemsLayout>
-                    <StackLayout />
-                </Repeater.itemsLayout>
-                <Repeater.itemTemplate>
-                    <StackLayout>
-                        <GridLayout columns="1*, 2*" rows="auto">
-                            <Label text="{{name}}" horizontalAlignment="right" style="color: gray;" />
-                            <TextField class="plain" col="1" text="{{contribution}}" id="{{'contribution_' + id}}" style="color: #6700be; font-weight: bold;" />
-                        </GridLayout>
-                    </StackLayout>
-                </Repeater.itemTemplate>
-            </Repeater>
-            <GridLayout columns="1*, 2*" rows="auto">
-                <Label text="Final Total: " horizontalAlignment="right" style="color: gray;" />
-                <Label col="1" text="{{endShiftFinalTotal}}" style="font-weight: bold; padding: 10 10; margin: 5 0; color: green;"/>
-            </GridLayout>
+            <StackLayout>
+                <Label text="CONTRIBUTIONS" class="setting_section_header" horizontalAlignment="center" />
+                <Label class="note" text="(Tap to Edit)" marginBottom="10" marginTop="5" horizontalAlignment="center" />
+                <Repeater items="{{ families }}" style="border-radius: 10;">
+                    <Repeater.itemsLayout>
+                        <StackLayout />
+                    </Repeater.itemsLayout>
+                    <Repeater.itemTemplate>
+                        <StackLayout>
+                            <GridLayout columns="1*, 2*" rows="auto">
+                                <Label text="{{name}}" horizontalAlignment="right" style="color: gray;" />
+                                <TextField class="plain" col="1" text="{{contribution}}" id="{{'contribution_' + id}}" style="color: #6700be; font-weight: bold;" />
+                            </GridLayout>
+                        </StackLayout>
+                    </Repeater.itemTemplate>
+                </Repeater>
+                <GridLayout columns="1*, 2*" rows="auto">
+                    <Label text="Final Total: " horizontalAlignment="right" style="color: gray;" />
+                    <Label col="1" text="{{endShiftFinalTotal}}" style="font-weight: bold; padding: 10 10; margin: 5 0; color: green;"/>
+                </GridLayout>    
+            </StackLayout>
+            
             <Button class="purpleBtn" text="SAVE" tap="{{saveShift}}" style="margin-top: 40; margin-bottom: 50;" />
         </StackLayout>        
     </ScrollView>

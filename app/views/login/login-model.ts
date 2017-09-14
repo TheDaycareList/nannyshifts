@@ -112,7 +112,7 @@ export class LoginModel extends Observable {
                         } else {
                             frame.topmost().navigate({
                                 moduleName: '/views/home/home',
-                                backstackVisible: false,
+                                backstackVisible: true,
                                 animated: false,
                                 clearHistory: true
                             })

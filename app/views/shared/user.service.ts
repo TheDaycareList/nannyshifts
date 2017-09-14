@@ -142,7 +142,6 @@ export class UserService {
 
     public updateFamily(id, data) {
         let uid = JSON.parse(appSettings.getString('uid'));
-        console.log(uid);
         return new Promise((resolve, reject) => { 
             if (uid) {
                 firebase.update('/users/' + uid + '/families/' + id, data).then(result => {

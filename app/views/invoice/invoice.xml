@@ -1,21 +1,55 @@
-<Page loaded="loaded" actionBarHidden="true"  xmlns="http://schemas.nativescript.org/tns.xsd">
+<Page loaded="loaded" xmlns="http://schemas.nativescript.org/tns.xsd" actionBarHidden="true">
     <GridLayout>
-        <Image src="res://loginbg" stretch="aspectFill"></Image>
+        <Image src="res://lightbg" stretch="aspectFill"></Image>
         <StackLayout>
-            <GridLayout columns="100, *, 100" marginTop="20" height="45" row="1">
-                <Button text="&#xf053;" class="fa" tap="{{goback}}" col="0" horizontalAlignment="left" marginLeft="10"  style="font-size: 25; color: #6700be;"/>
-                <Label class="fa" text="&#xf017;" col="1" horizontalAlignment="center" style="font-size: 35; color: #6700be;"/>
-                <Label text="&#xf0c9;" class="fa" tap="{{showMenu}}" col="2" horizontalAlignment="right" marginRight="10"  style="font-size: 25; color: #6700be;"/>
+            <StackLayout height="20" style="background-color: #6700be;" />
+            <GridLayout columns="100, *, 100" height="45" row="1">
+                <Button text="&#xf053;" class="fa" tap="{{goback}}" col="0" horizontalAlignment="left" marginLeft="0"  style="font-size: 25; color: #6700be;"/>
+                <Label class="invoice_title" text="{{invoice.family_name}}" col="1" />
+                <Label text="&#xf0c9;" class="fa" tap="{{invoiceOptions}}" col="2" horizontalAlignment="right" marginRight="10"  style="font-size: 25; color: #6700be;"/>
             </GridLayout>
             <GridLayout height="100%">
-                
-                <GridLayout rows="*, auto, *">
-                    <StackLayout row="1">
-                        <Label text="hi" />
+                <ScrollView>
+                    <StackLayout>
+                        <Label class="invoice_total" text="{{'$' + invoice.total}}" />
+                        <Label class="invoiced_on" text="{{'Invoiced on ' + invoice.date_created_pretty}}" marginBottom="20"></Label>
+
+                        <Label class="paid_tag" visibility="{{ paid ? 'visible' : 'collapsed' }}" text="PAID" marginBottom="40" />
+                        <Label class="unpaid_tag" visibility="{{ !paid ? 'visible' : 'collapsed' }}" text="UNPAID" marginBottom="40" />
+
+                        <Label text="You haven't sent this invoice yet." class="sectionHeader" visibility="{{ !sent ? 'visible' : 'collapsed' }}" marginBottom="40" />
+                        <StackLayout visibility="{{ sent ? 'visible' : 'collapsed' }}" marginBottom="40" id="invoice_history">
+                            <Label class="sectionHeader" text="INVOICE HISTORY" />
+                            <Repeater items="{{ sentTimes }}" visibility="{{ sentTimes && sentTimes.length ? 'visible' : 'collapsed' }}">
+                                <Repeater.itemsLayout>
+                                    <StackLayout style="padding: 10; text-align: center;" />
+                                </Repeater.itemsLayout>
+                                <Repeater.itemTemplate>
+                                    <Label text="{{ 'Invoice sent on ' + $value }}" class="note" />
+                                </Repeater.itemTemplate>
+                            </Repeater>
+                            <Label text="There's no history recorded for this invoice yet." class="note" style="text-align: center;" visibility="{{ !sentTimes || !sentTimes.length ? 'visible' : 'collapsed' }}" />
+                        </StackLayout>
+
+                        <Label class="sectionHeader" text="INCLUDED SHIFTS" />
+                        <Repeater items="{{ invoice.shifts }}">
+                            <Repeater.itemsLayout>
+                                <StackLayout />
+                            </Repeater.itemsLayout>
+                            <Repeater.itemTemplate>
+                                <StackLayout class="included_shift">
+                                    <Label class="shift_detail" text="{{display_date + ' from ' + display_timing}}" textWrap="true" />
+                                    <Label class="shift_family_contribution" text="{{this_family_name + ' contribution: $' + this_family_contribution}}" />
+                                </StackLayout>
+                            </Repeater.itemTemplate>
+                        </Repeater>
                     </StackLayout>
-                </GridLayout>
+                </ScrollView>
             </GridLayout>    
         </StackLayout>
+        <GridLayout height="100%" visibility="{{ loading ? 'visible' : 'collapsed' }}" style="background-color: rgba(255,255,255,0.5);">
+            <ActivityIndicator busy="{{loading}}" style="color: white; background-color: rgba(0,0,0,0.8); width: 100; height: 100; border-radius: 10;" />
+        </GridLayout>
     </GridLayout>
     
 </Page>

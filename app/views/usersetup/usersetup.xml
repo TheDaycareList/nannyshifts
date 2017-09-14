@@ -1,48 +1,69 @@
 <Page loaded="loaded" actionBarHidden="true">
-    <GridLayout height="100%">
-        <Image src="res://loginbg" stretch="aspectFill"></Image>
-        <GridLayout rows="*, auto, *">
-            <StackLayout row="1">
-                <StackLayout height="20"></StackLayout>
-                <Label textWrap="true" text="Timecard makes it super simple to track your hours, expenses, and keep everybody on the same page. You can add multiple families, and the app does all the math for you." />
-                <Label textWrap="true" text="Enter all the families whose kids you care for, and we'll show you how we do it." />
-                <TextField hint="Enter your hourly rate..." keyboardType="number" text="{{hourlyRate}}"></TextField>
-                <TextField hint="Enter your overtime rate..." keyboardType="number" text="{{overtimeRate}}"></TextField>
+    <StackLayout height="100%">
+        <StackLayout height="20" backgroundColor="#6700be"></StackLayout>
+        <GridLayout>
+            <Image src="res://lightbg" stretch="aspectFill"></Image>
+            <ScrollView>
+                <StackLayout>
+                    <StackLayout orientation="horizontal" style="text-align: center;" width="180" marginTop="20">
+                        <Label class="fa" text="&#xf017;" col="0" horizontalAlignment="center" style="font-size: 25; color: #6700be; margin-bottom: 15; margin-right: 5;"/>
+                        <Label text="Nanny Shifts" col="1" style="font-size: 25; color: #6700be; margin-bottom: 15; font-weight: bold;"/>
+                    </StackLayout>
+                    
+                    <Label textWrap="true" style="margin: 0 10; font-size: 15; color: #333;" text="Nanny Shifts makes it super simple to track your hours, send invoices, and keep everybody on the same page. You can add multiple families, and the app does all the math for you." />
+                    <Label textWrap="true" style="margin: 20 10 30 10; font-size: 15; color: #333;" text="Enter all the families whose kids you care for, and we'll show you how we do it." />
 
-                <Label text="Your Families" />
-                <Repeater items="{{ families }}">
-                    <Repeater.itemsLayout>
-                        <StackLayout />
-                    </Repeater.itemsLayout>
-                        
-                    <Repeater.itemTemplate>
-                        <StackLayout>
-                            <StackLayout class="families_added">
-                                <Label text="{{name + ' ' + email}}" />
+                    <Label text="YOUR RATES" style="text-align: center; margin-bottom: 5; font-weight: bold; color: #333; font-size: 15;" />
+                    <GridLayout columns="*, 2, *" style="margin: 0 10; border-radius: 10; ">
+                        <TextField hint="Enter hourly rate..." keyboardType="number" style="background-color: rgba(255,255,255,0.7);" text="{{hourlyRate}}"></TextField>
+                        <TextField hint="Enter overtime rate..." col="2" keyboardType="number" style="background-color: rgba(255,255,255,0.7);" text="{{overtimeRate}}"></TextField>
+                    </GridLayout>
+
+                    <Label class="note" text="Overtime is calculated based on a 40 hour work week." />
+                    
+
+                    <Label text="YOUR FAMILIES" style="text-align: center; margin-top: 30; font-weight: bold; color: #333; font-size: 15;" />
+                    <Repeater items="{{ families }}" style="border-radius: 10; margin: 10;">
+                        <Repeater.itemsLayout>
+                            <StackLayout />
+                        </Repeater.itemsLayout>
+                        <Repeater.itemTemplate>
+                            <StackLayout style="background-color: rgba(255,255,255,0.7);">
+                                <GridLayout columns="*, 80" rows="1, 50" >
+                                    <StackLayout colSpan="2" visibility="{{ isFirst ? 'collapsed' : 'visible' }}" style="height: 1; background-color: rgba(0,0,0,0.1);" />
+                                    <Label row="1" col="0" text="{{name}}" style="margin-left: 5;" />
+                                    <StackLayout orientation="horizontal" col="1" row="1" horizontalAlignment="right">
+                                        <Label text="&#xf057;" class="fa" style="font-size: 24; color: red;  margin-right: 15;" id="{{id}}" tap="{{$parents['Page'].removeFamily}}" />
+                                    </StackLayout>
+                                </GridLayout>
                             </StackLayout>
-                            <StackLayout style="height: 1; background-color: rgba(0,0,0,0.1)" />
-                        </StackLayout>
-                    </Repeater.itemTemplate>
-                </Repeater>
-                <Button text="Add a Family" tap="{{showAddFamily}}" />
+                        </Repeater.itemTemplate>
+                    </Repeater>
+                    <Button text="Add a Family" style="font-weight: bold; color: #6700be; margin: 20" tap="{{showAddFamily}}" />
 
-                <GridLayout class="spinnyBtn">
-                    <ActivityIndicator busy="{{saving}}" visibility="{{saving ? 'visible' : 'collapsed'}}" color="white" marginTop="10"></ActivityIndicator>
-                    <Button text="Save" tap="{{saveRates}}"></Button>
-                </GridLayout>
+                    <GridLayout class="spinnyBtn">
+                        <ActivityIndicator busy="{{saving}}" visibility="{{saving ? 'visible' : 'collapsed'}}" color="white" marginTop="10"></ActivityIndicator>
+                        <Button text="Save" tap="{{saveRates}}"></Button>
+                    </GridLayout>
 
-                <Button text="kill" tap="{{kill}}" />
-            </StackLayout>
+                    <!-- <Button text="kill" tap="{{kill}}" /> -->
+                </StackLayout>
+            </ScrollView>
+            <GridLayout id="add_family" rows="*, auto, *" columns="20, *, 20" visibility="{{ addingFamily ? 'visible' : 'collapsed' }}">
+                <StackLayout rowSpan="3" colSpan="3" style="background-color: rgba(0,0,0,0.8);" id="dimmer" />
+                
+                <StackLayout style="background-color: white; border-radius: 20;" row="1" col="1" id="chooser_holder">
+                    <GridLayout rows="50" columns="70, *, 70" style="background-color: #6700be;">
+                        <Button style="color: white; font-weight: bold; margin-left: 10; color: #d9adff;" text="Cancel" tap="{{closeAddFamily}}" />
+                        <Label style="color: white; font-weight: bold; margin-left: 10;" text="Add a Family" col="1" horizontalAlignment="center" />
+                        <Button style="color: white; font-weight: bold; margin-right: 10; color: #d9adff;" horizontalAlignment="right" col="2" text="Add" tap="{{addFamily}}" />
+                    </GridLayout>
+                    <TextField text="{{addingFamilyName}}" autocapitalizationType="words" fontSize="18" hint="Enter a family name (ex: The Coffins)" />
+                    <StackLayout height="1" backgroundColor="#E0E0E0" />
+                    <TextField text="{{addingFamilyEmail}}" keyboardType="email" autocorrect="false" fontSize="18" autocapitalizationType="none" hint="Enter a contact email for this family." />
+                </StackLayout>
+                
+            </GridLayout>
         </GridLayout>
-        <GridLayout id="add_family" rows="*, auto, *" visibility="{{ addingFamily ? 'visible' : 'collapsed' }}">
-            <StackLayout rowSpan="3" style="background-color: rgba(0,0,0,0.8);" />
-            <StackLayout style="background-color: white; margin: 0 10; border-radius: 10;" row="1">
-                <Label text="Add A Family" />
-                <TextField text="{{addingFamilyName}}" hint="Enter a family name (ex: The Coffins)" />
-                <TextField text="{{addingFamilyEmail}}" hint="Enter a contact email for this family." />
-                <Button text="Add" tap="{{addFamily}}" />
-            </StackLayout>
-            
-        </GridLayout>
-    </GridLayout>
+    </StackLayout>
 </Page>

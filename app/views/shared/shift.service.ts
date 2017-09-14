@@ -50,7 +50,7 @@ export class ShiftService {
             }
         }
 
-        return new Promise<User>((resolve, reject) => { 
+        return new Promise((resolve, reject) => { 
             if (appSettings.getString('shifts') && !forceGet) {
                 console.log('returning cached shifts');
                 resolve(JSON.parse(appSettings.getString('shifts')));
@@ -60,6 +60,8 @@ export class ShiftService {
                     queryResult => {
                         if (queryResult.value) {
                             resolve(queryResult.value);
+                        } else {
+                            resolve(false);
                         }
                     }, 
                     '/shifts/' + uid, 
@@ -72,30 +74,38 @@ export class ShiftService {
     }
 
     public buildAppData(forceGet?) {
-        return new Promise<User>((resolve, reject) => { 
+        return new Promise((resolve, reject) => { 
             this.getInvoices(false, forceGet).then(invoice_data => {
+                if (!invoice_data) appSettings.remove('invoices');
                 this.getShifts(false, forceGet).then(data => {
+                    if (!data) appSettings.remove('shifts');
                     let user = JSON.parse(appSettings.getString('userData'));
-                    for (let i in data) {
-                        data[i].id = i;
-                        for (let pp in invoice_data) {
-                            invoice_data[pp].id = pp;
-                            for (var xx = 0; invoice_data[pp].shift_ids.length > xx; xx++) {
-                                if (i == invoice_data[pp].shift_ids[xx]) {
-                                    //this shift exists in an invoice.
-                                    if (!data[i].invoiced) data[i].invoiced = [];
-                                    let invoicedObj = {
-                                        "invoice_id": invoice_data[pp].id,
-                                        "family_name": user.families[invoice_data[pp].family_id].name,
-                                        "family_id": invoice_data[pp].family_id
+                    if (data) {
+                        for (let i in data) {
+                            data[i].id = i;
+                            if (invoice_data) {
+                                for (let pp in invoice_data) {
+                                    invoice_data[pp].id = pp;
+                                    if (!invoice_data[pp].paid) invoice_data[pp].paid = false;
+                                    for (var xx = 0; invoice_data[pp].shift_ids.length > xx; xx++) {
+                                        if (i == invoice_data[pp].shift_ids[xx]) {
+                                            //this shift exists in an invoice.
+                                            if (!data[i].invoiced) data[i].invoiced = [];
+                                            let invoicedObj = {
+                                                "invoice_id": invoice_data[pp].id,
+                                                "family_name": user.families[invoice_data[pp].family_id].name,
+                                                "family_id": invoice_data[pp].family_id
+                                            }
+                                            data[i].invoiced.push(invoicedObj);
+                                        }
                                     }
-                                    data[i].invoiced.push(invoicedObj);
                                 }
                             }
                         }
                     }
-                    appSettings.setString('invoices', JSON.stringify(invoice_data));
-                    appSettings.setString('shifts', JSON.stringify(data));
+                    
+                    if (invoice_data) appSettings.setString('invoices', JSON.stringify(invoice_data));
+                    if (data) appSettings.setString('shifts', JSON.stringify(data));
                     resolve();    
                 })
                 
@@ -122,7 +132,7 @@ export class ShiftService {
             }
         }
 
-        return new Promise<User>((resolve, reject) => { 
+        return new Promise((resolve, reject) => { 
             if (appSettings.getString('invoices') && !forceGet) {
                 console.log('returning cached invoices');
                 resolve(JSON.parse(appSettings.getString('invoices')));
@@ -131,6 +141,8 @@ export class ShiftService {
                 firebase.query(queryResult => {
                     if (queryResult.value) {
                         resolve(queryResult.value);
+                    } else {
+                        resolve(false);
                     }
                 }, '/invoices/' + uid, options);
             }
@@ -178,6 +190,21 @@ export class ShiftService {
                     // appSettings.setString('shifts', JSON.stringify(shifts));
                     // resolve(result);
 
+                    this.buildAppData(true).then(() => {
+                        resolve(result);
+                    })
+                });
+            } else {
+                reject('Couldn\'t find the user record ID.');
+            }
+        })
+    }
+
+    public deleteInvoice(id) {
+        let uid = JSON.parse(appSettings.getString('uid'));
+        return new Promise((resolve, reject) => { 
+            if (uid) {
+                firebase.remove('/invoices/' + uid + '/' + id).then(result => {
                     this.buildAppData(true).then(() => {
                         resolve(result);
                     })

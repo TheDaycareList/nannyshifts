@@ -4,6 +4,8 @@
 
 .week_header .week_title {
     font-weight: bold;
+    font-size: 20;
+    margin-bottom: 5;
 }
 
 .week_header .stats {

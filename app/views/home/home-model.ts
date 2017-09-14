@@ -14,6 +14,7 @@ import * as builder from 'ui/builder';
 import { screen } from "platform";
 import { StackLayout } from 'ui/layouts/stack-layout';
 import { GridLayout } from 'ui/layouts/grid-layout';
+import { ListView } from 'ui/list-view';
 import { ScrollView, ScrollEventData } from 'ui/scroll-view';
 import { TextField } from 'ui/text-field';
 import { Label } from 'ui/label';
@@ -58,7 +59,9 @@ export class HomeModel extends Observable {
         shiftService.buildAppData(true).then(result => {
             this.getThisWeekShifts();
             this.set('isLoading', false);
-            this.processInvoices(JSON.parse(appSettings.getString('invoices')));
+            let invoices = [];
+            if (appSettings.getString('invoices')) invoices = JSON.parse(appSettings.getString('invoices'));
+            this.processInvoices(invoices);
         })
     }
 
@@ -90,6 +93,8 @@ export class HomeModel extends Observable {
     public invoiceTotal: number;
     public invoices: ObservableArray<Observable> = new ObservableArray([]);
     public invoiceMap = {};
+    public totalUnpaidString: string;
+    public totalUnpaid: number;
 
     public allShifts: ObservableArray<Observable> = new ObservableArray([]);
     public allShiftsMap: any = {};
@@ -105,7 +110,9 @@ export class HomeModel extends Observable {
                 console.log('fresh invoices length ' + JSON.parse(appSettings.getString('invoices')).length);
                 
             }).then(() => {
-                this.processInvoices(JSON.parse(appSettings.getString('invoices')));
+                let invoices = [];
+                if (appSettings.getString('invoices')) invoices = JSON.parse(appSettings.getString('invoices'));
+                this.processInvoices(invoices);
                 resolve()
             });
         })
@@ -123,13 +130,14 @@ export class HomeModel extends Observable {
                 }, 10)
             } else {
                 setTimeout(() => {
-                    let shifts = JSON.parse(appSettings.getString('shifts'));
+                    let shifts = {};
+                    if (appSettings.getString('shifts')) shifts = JSON.parse(appSettings.getString('shifts'));
                     this.processShifts(shifts);
                 }, 10)
-                
             }
         })
-
+        let tabView: TabView = this.page.getViewById('tabview')
+        this.selectedIndex = tabView.selectedIndex;
     }
 
     public showMenu() {
@@ -148,12 +156,23 @@ export class HomeModel extends Observable {
     }
 
     public saveRates() {
+        console.dir(this.get('user'));
         let data = {
-            hourlyRate: this.get('user').hourlyRate,
-            overtimeRate: this.get('user').overtimeRate
+            hourlyRate: this.page.getViewById('hourly_rate').text,
+            overtimeRate: this.page.getViewById('overtime_rate').text,
+            first_name: this.page.getViewById('first_name').text,
+            last_name: this.page.getViewById('last_name').text,
+            email: this.page.getViewById('email').text
+        }
+        if (!data.hourlyRate || !data.overtimeRate || !data.first_name || !data.last_name || !data.email) {
+            alert('Please fill out all the fields.');
+            return;
         }
         userService.updateUser(data).then(result => {
             console.log(result);
+            for (var x in data) {
+                this.get('user')[x] = data[x];
+            }
             this.hideSettings();
         })
     }
@@ -163,7 +182,9 @@ export class HomeModel extends Observable {
         shiftService.buildAppData(true).then(result => {
             this.getThisWeekShifts();
             this.set('isLoading', false);
-            this.processInvoices(JSON.parse(appSettings.getString('invoices')));
+            let invoices = [];
+            if (appSettings.getString('invoices')) invoices = JSON.parse(appSettings.getString('invoices'));
+            this.processInvoices(invoices);
             pullRefresh.refreshing = false;
         })
     }
@@ -247,9 +268,11 @@ export class HomeModel extends Observable {
                 this.processShifts(shifts);
             })
         } else {
-            let shifts = JSON.parse(appSettings.getString('shifts'));
-            console.log('shifts length + ' + shifts.length);
+            let shifts = {};
+            if (appSettings.getString('shifts')) shifts = JSON.parse(appSettings.getString('shifts'));
             this.processShifts(shifts);
+
+            
         }
         
     }
@@ -286,10 +309,15 @@ export class HomeModel extends Observable {
                     }
 
                     dialogs.action(msg, "Cancel", ["Do it."]).then(result => {
+                        
                         if (result == 'Do it.') {
-                            // shiftService.deleteShift(shift.id).then(result => {
-                            //     this.processShifts(JSON.parse(appSettings.getString('shifts')));
-                            // })
+                            invoice.set('loading', true);
+                            shiftService.deleteInvoice(invoice.get('id')).then(result => {
+                                let invoices = [];
+                                if (appSettings.getString('invoices')) invoices = JSON.parse(appSettings.getString('invoices'));
+                                this.processInvoices(invoices);
+                                invoice.set('loading', false);
+                            })
                         }
                     })
                 } else if (result == 'Mark As Paid') {
@@ -297,29 +325,69 @@ export class HomeModel extends Observable {
                     shiftService.updateInvoice(invoice.get('id'), {paid: true}).then(result => {
                         invoice.set('loading', false);
                         invoice.set('paid', true);
-                        //this.processInvoices(JSON.parse(appSettings.getString('invoices')));
+                        let total = parseFloat(invoice.get('total'));
+                        let currentUnpaidTotal = parseFloat(this.get('totalUnpaid'));
+                        let newUnpaidTotal = (currentUnpaidTotal - total).toFixed(2);
+                        this.set('totalUnpaid', newUnpaidTotal);
+                        this.set('totalUnpaidString', 'You have $' + newUnpaidTotal + ' in unpaid invoices.');
+                        if (!newUnpaidTotal || newUnpaidTotal == '0.00') this.set('totalUnpaidString', 'You\'re all paid up!');
+                        let invoiceListView: ListView = this.page.getViewById('invoices_listview');
+                        invoiceListView.refresh();
+                        //this.invoices.setItem(args.index, invoice);
                     })
                 } else if (result == 'Unmark As Paid') {
                     invoice.set('loading', true);
                     shiftService.updateInvoice(invoice.get('id'), {paid: false}).then(result => {
                         invoice.set('loading', false);
                         invoice.set('paid', false)
-                        //this.processInvoices(JSON.parse(appSettings.getString('invoices')));
+                        let total = parseFloat(invoice.get('total'));
+                        let currentUnpaidTotal = parseFloat(this.get('totalUnpaid'));
+                        let newUnpaidTotal = (currentUnpaidTotal + total).toFixed(2);
+                        this.set('totalUnpaid', newUnpaidTotal);
+                        this.set('totalUnpaidString', 'You have $' + newUnpaidTotal + ' in unpaid invoices.');
+                        if (!newUnpaidTotal || newUnpaidTotal == '0.00') this.set('totalUnpaidString', 'You\'re all paid up!');
+                        let invoiceListView: ListView = this.page.getViewById('invoices_listview');
+                        invoiceListView.refresh();
                     })
                 } else if (result == 'View') {
-                    frame.topmost().navigate('/views/invoice/invoice');
+                    this.invoiceMap[invoice.get('id')].family = this.familiesMap[invoice.get('family_id')];
+                    let navigationEntry:frame.NavigationEntry = {
+                        moduleName: "/views/invoice/invoice",
+                        context: this.invoiceMap[invoice.get('id')],
+                        animated: true,
+                        backstackVisible: true,
+                        clearHistory: false
+                    };
+                    frame.topmost().navigate(navigationEntry);
+                    //frame.topmost().navigate('/views/invoice/invoice');
 
                 } else if (result == 'Send to ' + this.familiesMap[invoice.get('family_id')].name) {
                     invoice.set('loading', true);
                     this.sendInvoice(invoice.get('id'), invoice);
-                    shiftService.updateInvoice(invoice.get('id'), {sent: true}).then(result => {
+                    let sentTimes = [moment().format()];
+                    console.dir(sentTimes);
+                    shiftService.updateInvoice(invoice.get('id'), {sent: true, sent_times: sentTimes}).then(result => {
                         invoice.set('sent', true);
-                        //this.processInvoices(JSON.parse(appSettings.getString('invoices')));
                         alert('The invoice has been sent!');
                         invoice.set('loading', false);
                     })
                 } else if (result == 'Re-send to ' + this.familiesMap[invoice.get('family_id')].name) {
+                    let sentTimes = [moment().format()];
+                    if (invoice.get('sent_times') && invoice.get('sent_times').length) {
+                        sentTimes = invoice.get('sent_times');
+                        sentTimes.push(moment().format());
+                    }
+                    console.dir(sentTimes);
+                    invoice.set('loading', true);
                     this.sendInvoice(invoice.get('id'), invoice, true);
+                    
+                    shiftService.updateInvoice(invoice.get('id'), {sent: true, sent_times: sentTimes}).then(result => {
+                        console.log('')
+                        invoice.set('sent', true);
+                        invoice.set('sent_times', sentTimes);
+                        alert('The invoice has been sent!');
+                        invoice.set('loading', false);
+                    })
                     alert('We sent a friendly reminder to ' + this.familiesMap[invoice.get('family_id')].name)
                 } 
             })
@@ -328,31 +396,15 @@ export class HomeModel extends Observable {
 
     public showCreateInvoice() {
         MyModel.set('selectedFamilyToInvoice', false);
+        
         MyModel.set('uninvoicedShifts', []);
         MyModel.showSettings('/views/components/editinvoice/editinvoice.xml');
         MyModel.set('settingsTitle', 'Create Invoice');
-    }
 
-    public chooseFamilyToInvoice() {
-        this.dismissSoftInputs();
-        this.set('picking', 'list');
-        this.set('pickerTitle', 'Choose Family');
-        let pickerItems = [];
-        this.families.forEach(item => {
-            pickerItems.push(item.get('name'));
-        })
-        this.set('pickerItems', pickerItems);
-        this.set('pickerDoneText', 'Done');
-        picker.animateShow();
-        this.set('pickerCancel', function() {
-            picker.animateHide().then(() => this.set('picking', false));
-        })
-        // empty the uninvoicedShifts array if theres anything in it.
-        this.set('pickerDone', function() {
+        if (this.families.length == 1) {
             while (this.uninvoicedShifts.length) this.uninvoicedShifts.pop();
             let uninvoicedShiftsArray = [];
-            let family = this.familiesMap[this.families.getItem(this.page.getViewById('listpicker').selectedIndex).get('id')];
-            this.selectedFamilyToInvoice = family;
+            let family = this.familiesMap[this.families.getItem(0).get('id')];
             let invoiceTotal = 0;
             for (var i in this.uninvoicedShiftsByFamilyMap[family.id]) {
                 
@@ -363,10 +415,58 @@ export class HomeModel extends Observable {
                     invoiceTotal += +this.addedShiftsMap[i].selected_family_contribution;
                 }
             }
-            this.set('invoiceTotal', invoiceTotal.toFixed(2));
-            this.set('uninvoicedShifts', uninvoicedShiftsArray);
-            picker.animateHide().then(() => this.set('picking', false));
-        })
+            if (uninvoicedShiftsArray.length) {
+                this.selectedFamilyToInvoice = family;
+                this.set('invoiceTotal', invoiceTotal.toFixed(2));
+                this.set('uninvoicedShifts', uninvoicedShiftsArray);
+            } else {
+                this.selectedFamilyToInvoice = false;
+                alert('The family you chose does not have any uninvoiced shifts, they\'re all paid up!')
+            }
+        }
+    }
+
+    public chooseFamilyToInvoice() {
+        if (this.families.length > 1) {
+            this.dismissSoftInputs();
+            this.set('picking', 'list');
+            this.set('pickerTitle', 'Choose Family');
+            let pickerItems = [];
+            this.families.forEach(item => {
+                pickerItems.push(item.get('name'));
+            })
+            this.set('pickerItems', pickerItems);
+            this.set('pickerDoneText', 'Done');
+            picker.animateShow();
+            this.set('pickerCancel', function() {
+                picker.animateHide().then(() => this.set('picking', false));
+            })
+            // empty the uninvoicedShifts array if theres anything in it.
+            this.set('pickerDone', function() {
+                while (this.uninvoicedShifts.length) this.uninvoicedShifts.pop();
+                let uninvoicedShiftsArray = [];
+                let family = this.familiesMap[this.families.getItem(this.page.getViewById('listpicker').selectedIndex).get('id')];
+                let invoiceTotal = 0;
+                for (var i in this.uninvoicedShiftsByFamilyMap[family.id]) {
+                    
+                    if (this.addedShiftsMap[i].end_time && this.addedShiftsMap[i].contributions[family.id]) {
+                        let familyContribution = this.addedShiftsMap[i].contributions[family.id];
+                        this.addedShiftsMap[i].selected_family_contribution = familyContribution;
+                        uninvoicedShiftsArray.push(this.addedShiftsMap[i]);
+                        invoiceTotal += +this.addedShiftsMap[i].selected_family_contribution;
+                    }
+                }
+                if (uninvoicedShiftsArray.length) {
+                    this.selectedFamilyToInvoice = family;
+                    this.set('invoiceTotal', invoiceTotal.toFixed(2));
+                    this.set('uninvoicedShifts', uninvoicedShiftsArray);
+                } else {
+                    this.selectedFamilyToInvoice = false;
+                    alert('The family you chose does not have any uninvoiced shifts, they\'re all paid up!')
+                }       
+                picker.animateHide().then(() => this.set('picking', false));
+            })
+        }
     }
 
     public unselectUninvoicedShift(args) {
@@ -411,7 +511,9 @@ export class HomeModel extends Observable {
         } else {
             shiftService.createInvoice(args).then(result => {
                 this.hideSettings();    
-                this.processInvoices(JSON.parse(appSettings.getString('invoices')));    
+                let invoices = [];
+                if (appSettings.getString('invoices')) invoices = JSON.parse(appSettings.getString('invoices'));
+                this.processInvoices(invoices);
                 
             })
         }
@@ -431,7 +533,8 @@ export class HomeModel extends Observable {
             total: this.get('invoiceTotal'),
             paid: false,
             date_created: moment().format(),
-            sent: true
+            sent: true,
+            sent_times: [moment().format()]
         }
         if (!args.shift_ids || !args.shift_ids.length) {
             alert('Please select one or more shifts to include in this invoice.');
@@ -439,7 +542,9 @@ export class HomeModel extends Observable {
             shiftService.createInvoice(args).then((result:any) => {
                 this.hideSettings();
                 this.sendInvoice(result.key)
-                this.processInvoices(JSON.parse(appSettings.getString('invoices')));      
+                let invoices = [];
+                if (appSettings.getString('invoices')) invoices = JSON.parse(appSettings.getString('invoices'));
+                this.processInvoices(invoices);
             })
         }
         
@@ -491,12 +596,15 @@ export class HomeModel extends Observable {
         } else {
             for (var i = 0; invoice.shift_ids.length > i; i++) {
                 let shift = MyModel.addedShiftsMap[invoice.shift_ids[i]];
-                html += `
-                    <tr>
-                        <td align="left" style="padding: 5; border-bottom: 1px solid #f5f5f5;">`+ shift.display_date +`<br /><span style="font-size: 11px; color: gray;">` + shift.display_timing + `</span></td>
-                        <td align="left" style="padding: 5; border-bottom: 1px solid #f5f5f5; font-weight: bold;">$` + shift.contributions[invoice.family_id] + `</td>
-                    </tr>
-                `;
+                if (shift) {
+                    html += `
+                        <tr>
+                            <td align="left" style="padding: 5; border-bottom: 1px solid #f5f5f5;">`+ shift.display_date +`<br /><span style="font-size: 11px; color: gray;">` + shift.display_timing + `</span></td>
+                            <td align="left" style="padding: 5; border-bottom: 1px solid #f5f5f5; font-weight: bold;">$` + shift.contributions[invoice.family_id] + `</td>
+                        </tr>
+                    `;
+                }
+                
             }
             html += `
                     
@@ -522,13 +630,40 @@ export class HomeModel extends Observable {
         if (shift) {
             dialogs.action(shift.title + ' from ' + shift.display_hours, "Cancel", ["Edit Shift", "Delete Shift"]).then(result => {
                 if (result == 'Edit Shift') {
-                    this.showEditShift(false, shift);
+                    console.dir(JSON.stringify(shift.invoiced));
+                    if (shift.invoiced) {
+                        let msg = 'This shift is included in invoices for the following familes: ' + shift.invoiced_families_string + '. If you edit the contributions for a family, you\'ll need to delete the invoice this shift is associated with and create a new one. Also, make sure you reach out to the family and inform them to ignore the previous invoice.';
+                        if (this.families.length == 1) msg = 'This shift is included in an invoice already. If you edit the hours worked, you\'ll need to delete the invoice this shift is associated with and create a new one. Also, make sure you reach out to the family and inform them to ignore the previous invoice.'
+                        dialogs.confirm({
+                            title: "This shift has already been invoiced!",
+                            message: msg,
+                            okButtonText: "Ok.",
+                            cancelButtonText: "Cancel"
+                        }).then((result) => {
+                            // result argument is boolean
+                            console.dir(result);
+                            if (result) {
+                                this.showEditShift(false, shift);
+                            }
+                        });
+                    } else {
+                        this.showEditShift(false, shift);
+                    }
+                    
                 } else if (result == 'Delete Shift') {
-                    dialogs.action('Are you sure you want to delete this shift? This cannot be undone.', "Cancel", ["Do it."]).then(result => {
+                    let msg = 'Are you sure you want to delete this shift? This cannot be undone.';
+                    if (shift.invoiced) {
+                        msg = 'This shift is included in invoices for the following familes: ' + shift.invoiced_families_string + '. Deleting this shift will remove it from that invoice, but not adjust the invoice\'s total. Are you sure you want to delete this shift? It cannot be undone.';
+                        if (this.families.length == 1) msg = 'This shift is included in an invoice. Deleting this shift will remove it from that invoice, but not adjust the invoice\'s total. Are you sure you want to delete this shift? It cannot be undone.';
+                    }
+
+                    dialogs.action(msg, "Cancel", ["Do it."]).then(result => {
                         if (result == 'Do it.') {
                             shiftService.deleteShift(shift.id).then(result => {
                                 this.processShifts(JSON.parse(appSettings.getString('shifts')));
-                                this.processInvoices(JSON.parse(appSettings.getString('invoices')));
+                                let invoices = [];
+                                if (appSettings.getString('invoices')) invoices = JSON.parse(appSettings.getString('invoices'));
+                                this.processInvoices(invoices);
 
                             })
                         }
@@ -628,7 +763,8 @@ export class HomeModel extends Observable {
             beginningOfWeek = moment(shift.start_time).format('dddd MMMM Do YYYY');
         }
         let totalMinutes = 0;
-        let reverseShifts = this.weeks[beginningOfWeek].shifts.slice(0).reverse();
+        let reverseShifts = [];
+        if (this.weeks[beginningOfWeek]) reverseShifts = this.weeks[beginningOfWeek].shifts.slice(0).reverse();
         for (var i = 0; reverseShifts.length > i; i++) {
             let myShift = reverseShifts[i];
             // console.dir(myShift);
@@ -663,39 +799,47 @@ export class HomeModel extends Observable {
         let newTotal:any = (earned.total_earned/families.length).toFixed(2);
         // console.log('each contribution: ' + newTotal);
         MyModel.set('endShiftFinalTotal', '$' + (newTotal*families.length).toFixed(2));
-        for (var i = 0; families.length > i; i++) {
-            if (editingShift.id && editingShift.contributions) {
-                 if (editingShift.contributions[families.getItem(i).id]) {
-                    families.getItem(i).set('contribution', editingShift.contributions[families.getItem(i).id]);
-                 } else {
-                    families.getItem(i).set('contribution', '0.00');
-                 }
-            } else {
-                families.getItem(i).set('contribution', newTotal);
-            }
-            
-            families.getItem(i).on(Observable.propertyChangeEvent, (args: PropertyChangeData) => {
-                if (args.propertyName == 'contribution') {
-                    let finalTotal:number = 0;
-                    let invalidNumbers = false;
-                    for (var x = 0; MyModel.families.length > x; x++) {
-                        if (!MyModel.families.getItem(x).get('contribution')) MyModel.families.getItem(x).set('contribution', 0)
-                        if (isNaN(MyModel.families.getItem(x).get('contribution'))) {
-                            invalidNumbers = true;
-                        } else {
-                            finalTotal += parseFloat(MyModel.families.getItem(x).get('contribution'));
-                        }
-                    }
-                    if (invalidNumbers) {
-                        MyModel.set('endShiftFinalTotal', 'Enter valid numbers.');
+
+        if (families.length > 1) {
+            for (var i = 0; families.length > i; i++) {
+                if (editingShift.id && editingShift.contributions) {
+                    // we are editing a shift, so dont update the contributions automatically. make the user do it.
+                    if (editingShift.contributions[families.getItem(i).id]) {
+                        families.getItem(i).set('contribution', editingShift.contributions[families.getItem(i).id]);
                     } else {
-                        MyModel.set('endShiftFinalTotal', '$' + finalTotal.toFixed(2));
+                        families.getItem(i).set('contribution', '0.00');
                     }
-                    
+                } else {
+                    families.getItem(i).set('contribution', newTotal);
                 }
-            })
-            
+                
+                families.getItem(i).on(Observable.propertyChangeEvent, (args: PropertyChangeData) => {
+                    if (args.propertyName == 'contribution') {
+                        let finalTotal:number = 0;
+                        let invalidNumbers = false;
+                        for (var x = 0; MyModel.families.length > x; x++) {
+                            if (!MyModel.families.getItem(x).get('contribution')) MyModel.families.getItem(x).set('contribution', 0)
+                            if (isNaN(MyModel.families.getItem(x).get('contribution'))) {
+                                invalidNumbers = true;
+                            } else {
+                                finalTotal += parseFloat(MyModel.families.getItem(x).get('contribution'));
+                            }
+                        }
+                        if (invalidNumbers) {
+                            MyModel.set('endShiftFinalTotal', 'Enter valid numbers.');
+                        } else {
+                            MyModel.set('endShiftFinalTotal', '$' + finalTotal.toFixed(2));
+                        }
+                        
+                    }
+                })
+                
+            }
+        } else {
+            // theres only one family, so always update the contributions.
+            families.getItem(0).set('contribution', newTotal);
         }
+        
     }
 
     public changeShiftEndTime() {
@@ -814,14 +958,18 @@ export class HomeModel extends Observable {
         if (editingShift.id) {
             shiftService.updateShift(editingShift.id, args).then(result => {
                 this.processShifts(JSON.parse(appSettings.getString('shifts')));
-                this.processInvoices(JSON.parse(appSettings.getString('invoices')));
+                let invoices = [];
+                if (appSettings.getString('invoices')) invoices = JSON.parse(appSettings.getString('invoices'));
+                this.processInvoices(invoices);
                 if (editingShift.id == MyModel.get('clockedIn').id && args.end_time) MyModel.set('clockedIn', false);
                 this.hideSettings();
             })
         } else {
             shiftService.addShift(args).then(result => {
                 this.processShifts(JSON.parse(appSettings.getString('shifts')));
-                this.processInvoices(JSON.parse(appSettings.getString('invoices')));
+                let invoices = [];
+                if (appSettings.getString('invoices')) invoices = JSON.parse(appSettings.getString('invoices'));
+                this.processInvoices(invoices);
                 this.hideSettings();
             })
         }
@@ -859,7 +1007,6 @@ export class HomeModel extends Observable {
     /****************** /SHIFT FUNCTIONS ******************/
 
     public onSelectedIndexChanged(args: SelectedIndexChangedEventData) {
-        console.log(args.newIndex);
         if (args.newIndex == 0) {
             this.getThisWeekShifts();
         } else if (args.newIndex = 1) {
@@ -870,16 +1017,22 @@ export class HomeModel extends Observable {
     public kill() {
         appSettings.remove('userData');
         appSettings.remove('uid');
-        appSettings.remove('userRecordID');
-        frame.topmost().navigate('/views/login/login');
+        appSettings.remove('invoices');
+        appSettings.remove('shifts');
+        let navigationEntry = {
+            moduleName: "/views/login/login",
+            animated: false,
+        };
+        frame.topmost().navigate(navigationEntry);
     }
 
     public settingsScroll(args: ScrollEventData) {
-        console.log('scrolling');
+
     }
 
     private showSettings(viewPath) {
-        this.page.getViewById('maingrid').animate(<AnimationDefinition>{
+        let maingrid: GridLayout = this.page.getViewById('maingrid');
+        maingrid.animate(<AnimationDefinition>{
             scale: {x: .92  , y: .92},
             duration: 300,
             curve: AnimationCurve.cubicBezier(0.1, 0.1, 0.1, 1)
@@ -990,7 +1143,8 @@ export class HomeModel extends Observable {
     public hideSettings() {
         this.dismissSoftInputs();
         editingShift = false;
-        this.page.getViewById('maingrid').animate(<AnimationDefinition>{
+        let maingrid: GridLayout = this.page.getViewById('maingrid');
+        maingrid.animate(<AnimationDefinition>{
             scale: {x: 1, y: 1},
             duration: 300,
             curve: AnimationCurve.cubicBezier(0.1, 0.1, 0.1, 1)
@@ -1012,7 +1166,6 @@ export class HomeModel extends Observable {
     public removeSectionedShift(args) {
         console.dir(args);
         //this.sectionedShifts.getItem(args.index);
-        console.log(args.index);
         this.sectionedShifts.splice(args.index, 1);
     }
 
@@ -1024,7 +1177,6 @@ export class HomeModel extends Observable {
             if (!myShift.end_time) this.set('clockedIn', shifts[i]);
             shiftsArray.push(myShift);
         }
-        console.log('shifts array length ' + shiftsArray.length);
 
         shiftsArray.sort((a, b) => {
             if (moment(a.start_time) < moment(b.start_time)) {
@@ -1037,6 +1189,7 @@ export class HomeModel extends Observable {
         let weeks = {};
         this.set('addedShiftsMap', {});
 
+        while (this.thisWeek.length) this.thisWeek.pop();
         // calculate hours worked and money earned.
         let thisWeekMinutesWorked = 0;
         for (var s = 0; shiftsArray.length > s; s++) {
@@ -1116,7 +1269,6 @@ export class HomeModel extends Observable {
         while (this.sectionedShifts.length) this.sectionedShifts.pop();
 
         for (var w in weeks) {
-            //console.log(weeks[w].title);
             for (var iw = 0; weeks[w].shifts.length > iw; iw++) {
                 var myShift = weeks[w].shifts[iw]
                 if (iw == 0) {
@@ -1219,7 +1371,6 @@ export class HomeModel extends Observable {
             this.set('total_earned', (thisWeekMinutesWorked*minuteRate).toFixed(2));
         }
         this.set('thisWeekMinutesWorked', thisWeekMinutesWorked);
-        console.log(thisWeekMinutesWorked);
         let timeWorked = '0 HOURS';
         if (thisWeekMinutesWorked) timeWorked = shiftService.calculateShiftHoursWorked(false, false, thisWeekMinutesWorked).time_worked;
         
@@ -1232,23 +1383,30 @@ export class HomeModel extends Observable {
         let user = JSON.parse(appSettings.getString('userData'));
         //let invoicesArray = new ObservableArray();
         this.set('invoicedShiftsByFamilyMap', {});
+        let total_unpaid = 0;
         for (var i in invoices) {
             invoices[i].id = i;
             invoices[i].shifts = [];
             invoices[i].family_name = user.families[invoices[i].family_id].name;
             invoices[i].date_created_pretty = moment(invoices[i].date_created).format('MMM Do, YYYY');
             for (var s = 0; invoices[i].shift_ids.length > s; s++) {
-                if (!this.invoicedShiftsByFamilyMap[invoices[i].family_id]) this.invoicedShiftsByFamilyMap[invoices[i].family_id] = {};
-                this.invoicedShiftsByFamilyMap[invoices[i].family_id][invoices[i].shift_ids[s]] = true;
-                let shift = this.addedShiftsMap[invoices[i].shift_ids[s]];
-                shift.contribution = shift.contributions[invoices[i].family_id];
-                shift.invoice_title_display = moment(shift.start_time).format('M/D/YY') + ': ' + shift.display_hours;
-                shift.invoiced = true;
-                invoices[i].shifts.push(shift);
+                if (this.addedShiftsMap[invoices[i].shift_ids[s]]) {
+                    // if this conditional isnt satisfied, it probably means the user deleted the shift after it was invoiced.
+                    if (!this.invoicedShiftsByFamilyMap[invoices[i].family_id]) this.invoicedShiftsByFamilyMap[invoices[i].family_id] = {};
+                    this.invoicedShiftsByFamilyMap[invoices[i].family_id][invoices[i].shift_ids[s]] = true;
+                    let shift = this.addedShiftsMap[invoices[i].shift_ids[s]];
+                    shift.contribution = shift.contributions[invoices[i].family_id];
+                    shift.invoice_title_display = moment(shift.start_time).format('M/D/YY') + ': ' + shift.display_hours;
+                    shift.invoiced = true;
+                    invoices[i].shifts.push(shift);
+                }
+                
             }
             // this is required to make the UI respect the loading indicator.
             invoices[i].loading = false;
             if (!invoices[i].sent) invoices[i].sent = false;
+            if (!invoices[i].paid) total_unpaid += invoices[i].total-0;
+            
 
             this.invoiceMap[i] = invoices[i];
             let isAdded = false;
@@ -1258,6 +1416,9 @@ export class HomeModel extends Observable {
             
             //this.invoices.push(observableFromObject(invoices[i]));
         }
+        this.set('totalUnpaidString', 'You have $' + total_unpaid.toFixed(2) + ' in unpaid invoices.');
+        this.set('totalUnpaid', total_unpaid.toFixed(2));
+        if (!total_unpaid) this.set('totalUnpaidString', 'You\'re all paid up!');
         this.invoices.sort((a:any, b:any) => {
             if (moment(a.date_created) < moment(b.date_created)) {
                 return 1;
@@ -1266,7 +1427,6 @@ export class HomeModel extends Observable {
             }
         })
 
-        console.log(this.invoices.length)
         // console.log('invoicesArray lenght ' + invoicesArray.length);
         // this.set('invoices', invoicesArray);
         // empty this and repopulate it.
@@ -1278,7 +1438,6 @@ export class HomeModel extends Observable {
                     let myShift = this.addedShiftsMap[shift_id];
                     let contribution:any = false;
                     if (myShift.contributions) contribution = myShift.contributions[family_id];
-                    console.log(contribution);
                     if (contribution && contribution != '0') this.uninvoicedShiftsByFamilyMap[family_id][shift_id] = true;
                 }
             }

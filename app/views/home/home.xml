@@ -6,6 +6,8 @@
     xmlns:InvoicesView="views/home/invoices"
     xmlns:ThisWeekView="views/home/thisweek">
     <GridLayout height="100%">
+
+    
         <Image src="res://lightbg" stretch="aspectFill"></Image>
         <GridLayout id="maingrid">
             <drawer:RadSideDrawer id="drawer" drawerLocation="Right" >
@@ -37,7 +39,7 @@
                                         <InvoicesView:invoices />
                                     </TabViewItem.view>
                                 </TabViewItem>
-                                <TabViewItem title="Expenses" iconSource="res://expenses_icon">
+                                <!-- <TabViewItem title="Expenses" iconSource="res://expenses_icon">
                                     <TabViewItem.view>
                                         <GridLayout id="expenses">
                                             <StackLayout>
@@ -45,7 +47,7 @@
                                             </StackLayout>
                                         </GridLayout>
                                     </TabViewItem.view>
-                                </TabViewItem>
+                                </TabViewItem> -->
                             </TabView.items>
                         </TabView>
                     </GridLayout>
@@ -65,12 +67,15 @@
                                         </GridLayout>
 
                                         <GridLayout rows="20, 1, auto">
-                                            <Label text="YOUR RATES" style="font-size: 11; color: white;" />
+                                            <Label text="YOUR INFO" style="font-size: 11; color: white;" />
                                             <StackLayout style="height: 1; background-color: rgba(255,255,255,0.2);" row="1" />
-                                            <StackLayout row="2">
+                                            <StackLayout row="2" style="font-size: 14;">
                                                 <Label text="{{'Hourly Rate: $' + user.hourlyRate}}" style="color: white; margin-top: 10;" />
                                                 <Label text="{{'Overtime Rate: $' + user.overtimeRate}}" style="color: white; margin-top: 10;" />
-                                                <Button class="transBtn" text="Edit Rates" tap="{{editRates}}" style="margin-top: 10;" />
+                                                <Label text="{{'Email: ' + user.email}}" style="color: white; margin-top: 10;" />
+                                                <Label text="{{'First Name: ' + (user.first_name ? user.first_name : 'Not set...')}}" style="color: white; margin-top: 10;" />
+                                                <Label text="{{'Last Name: ' + (user.last_name ? user.last_name : 'Not set...')}}" style="color: white; margin-top: 10;" />
+                                                <Button class="transBtn" text="Edit Info" tap="{{editRates}}" style="margin-top: 10;" />
                                             </StackLayout>
                                         </GridLayout>
                                         <StackLayout marginTop="40" />
@@ -104,8 +109,8 @@
                                         <GridLayout rows="1, 30, auto">
                                             <StackLayout style="height: 1; background-color: rgba(255,255,255,0.2);" row="0" />
                                             <StackLayout row="2">
-                                                <Button text="Log User" class="transBtn" tap="{{logUser}}" style="margin: 5 0;" />
-                                                <Button text="Test Email" class="transBtn" tap="{{sendTestEmail}}" style="margin: 5 0;" />
+                                                <!-- <Button text="Log User" class="transBtn" tap="{{logUser}}" style="margin: 5 0;" />
+                                                <Button text="Test Email" class="transBtn" tap="{{sendTestEmail}}" style="margin: 5 0;" /> -->
                                                 <Button text="Log Out" class="transBtn" tap="{{kill}}" style="margin: 5 0;" />
                                             </StackLayout>
                                         </GridLayout>

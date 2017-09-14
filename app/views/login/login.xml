@@ -5,8 +5,7 @@
             <StackLayout row="1">
 
                 <StackLayout height="20"></StackLayout>
-                <!-- <Button text="Get By Email" tap="{{getUserByEmail}}" /> -->
-                <!--<Image src="res://presonus_logo" class="logo" stretch="aspectFit" width="200" horizontalAlignment="center"></Image>-->
+
                 <TextField hint="{{loggingIn ? 'Enter your email...' : 'Enter an email...'}}" keyboardType="email" autocapitalizationType="none" text="{{email}}"></TextField>
                 <TextField hint="{{logginIn ? 'Enter your password...' : 'Enter a password...'}}" text="{{password}}" secure="true"></TextField>
                 <TextField hint="Re-enter your password..." text="{{password2}}" visibility="{{ loggingIn ? 'collapsed' : 'visible' }}" secure="true"></TextField>

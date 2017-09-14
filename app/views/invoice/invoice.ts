@@ -7,5 +7,6 @@ import * as frame from 'ui/frame';
 
 export function loaded(args: EventData) {
     let page = <Page>args.object;
-    page.bindingContext = new InvoiceModel();
+    let invoice = page.navigationContext;
+    page.bindingContext = new InvoiceModel(invoice);
 }

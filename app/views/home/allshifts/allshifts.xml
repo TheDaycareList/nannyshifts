@@ -1,7 +1,6 @@
-<StackLayout loaded="{{allShiftsLoaded}}">
-    <Label text="{{heytest}}" />
+<GridLayout loaded="{{allShiftsLoaded}}">
     <ActivityIndicator busy="{{isLoading ? true : false}}" visibility="{{isLoading ? 'visible' : 'collapsed'}}" height="50" />
-    <ListView items="{{ sectionedShifts }}" itemTemplateSelector="header ? 'header' : 'shift'" itemTap="{{$parents['Page'].shiftOptions}}" loaded="onLoaded" separatorColor="transparent" itemLoading="onItemLoading" style="background-color: transparent; height: 100%;">
+    <ListView items="{{ sectionedShifts }}" itemTemplateSelector="header ? 'header' : 'shift'" itemTap="{{$parents['Page'].shiftOptions}}" loaded="onLoaded" separatorColor="transparent" style="background-color: transparent; height: 100%;" visibility="{{ sectionedShifts.length ? 'visible' : 'collapsed' }}">
         <ListView.itemTemplates>
             <template key="header">
                 <StackLayout class="week_header">
@@ -25,15 +24,11 @@
             </template>
         </ListView.itemTemplates>
     </ListView>
-    <!--<Repeater items="{{ sectionedShifts }}">
-        <Repeater.itemsLayout>
-            <StackLayout />
-        </Repeater.itemsLayout>
-        <Repeater.itemTemplate>
-            <StackLayout>
-                <Label text="{{title}}"/>
-            </StackLayout>
-        </Repeater.itemTemplate>
-    </Repeater>-->
-</StackLayout>
+    <StackLayout height="100%" marginTop="200" visibility="{{ !sectionedShifts || !sectionedShifts.length ? 'visible' : 'collapsed' }}">
+        <Label text="You have not entered any shifts yet." style="color: gray; font-size: 18; margin-bottom: 10; text-align: center;" />    
+        <Label text="Click the + icon above to get started." style="color: gray; font-size: 13; text-align: center;" />    
+    </StackLayout>
+    
+
+</GridLayout>
 

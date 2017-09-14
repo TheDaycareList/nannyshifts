@@ -6,21 +6,21 @@
   "nativescript": {
     "id": "org.cubbynotes.nannyshifts",
     "tns-android": {
-      "version": "3.0.1"
+      "version": "3.2.0"
     },
     "tns-ios": {
-      "version": "3.1.0"
+      "version": "3.2.0"
     }
   },
   "dependencies": {
     "moment": "^2.18.1",
     "nativescript-iqkeyboardmanager": "^1.1.0",
-    "nativescript-plugin-firebase": "^3.11.4",
-    "nativescript-pulltorefresh": "^2.0.1",
+    "nativescript-plugin-firebase": "^4.0.6",
+    "nativescript-pulltorefresh": "^2.0.2",
     "nativescript-taptic-engine": "^2.0.3",
-    "nativescript-telerik-ui": "^3.0.4",
+    "nativescript-telerik-ui": "^3.1.0",
     "nativescript-theme-core": "~1.0.2",
-    "tns-core-modules": "^3.0.1",
+    "tns-core-modules": "^3.2.0",
     "tns-platform-declarations": "^3.0.0"
   },
   "devDependencies": {
