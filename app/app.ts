@@ -19,7 +19,11 @@ firebase.init().then((instance) => {
 console.log('looking for stored userdata');
 if (appSettings.getString('userData')) {
     let userData = JSON.parse(appSettings.getString('userData'));
-    if (!userData.hourlyRate || !userData.families) {
+    let familyCount = 0;
+    if (userData.families) {
+        for (var x in userData.families) familyCount++;
+    }
+    if (!userData.hourlyRate || !userData.families || !familyCount || !userData.first_name) {
         app.start({ moduleName: "views/usersetup/usersetup", backstackVisible: false });
     } else {
         app.start({ moduleName: "views/home/home" });

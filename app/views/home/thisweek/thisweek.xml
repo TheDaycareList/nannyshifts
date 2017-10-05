@@ -9,7 +9,7 @@
                         </GridLayout>
                         <StackLayout marginTop="10" visibility="{{isLoading ? 'collapsed' : 'visible'}}">
                             <Label text="{{hours_worked}}" color="#333" class="shifts_top_info hours_worked mont" horizontalAlignment="center" />
-                            <Label text="{{'$' + total_earned}}" color="green" class="shifts_top_info earned mont" horizontalAlignment="center" />
+                            <Label text="{{'$' + display_earned}}" color="green" class="shifts_top_info earned mont" horizontalAlignment="center" />
                         </StackLayout>
                     </StackLayout>
                     <ActivityIndicator busy="{{isLoading ? true : false}}" visibility="{{isLoading ? 'visible' : 'collapsed'}}" height="50" />

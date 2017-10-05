@@ -73,6 +73,7 @@ export class HomeModel extends Observable {
     public total_earned: number = 0.00;
     public regular_earned: number = 0;
     public overtime_earned: number= 0;
+    public display_earned: number= 0;
     public settingsTitle: string = 'Settings';
     public families: ObservableArray<Observable> = new ObservableArray([]);
     public familiesMap: any = {};
@@ -243,7 +244,7 @@ export class HomeModel extends Observable {
 
     public removeFamily(args) {
         let famId = args.object.id;
-        dialogs.confirm('Are you sure you want to remove this family?').then((result) => {
+        dialogs.confirm('Are you sure you want to remove this family? If they have contributed to any shifts, they will no longer display in the shift details, but the total amount received will not change.').then((result) => {
             if (result) {
                 userService.updateFamily(famId, {deleted: true}).then((result) => {
                     let families = MyModel.families;
@@ -398,9 +399,7 @@ export class HomeModel extends Observable {
         MyModel.set('selectedFamilyToInvoice', false);
         
         MyModel.set('uninvoicedShifts', []);
-        MyModel.showSettings('/views/components/editinvoice/editinvoice.xml');
-        MyModel.set('settingsTitle', 'Create Invoice');
-
+        
         if (this.families.length == 1) {
             while (this.uninvoicedShifts.length) this.uninvoicedShifts.pop();
             let uninvoicedShiftsArray = [];
@@ -419,10 +418,16 @@ export class HomeModel extends Observable {
                 this.selectedFamilyToInvoice = family;
                 this.set('invoiceTotal', invoiceTotal.toFixed(2));
                 this.set('uninvoicedShifts', uninvoicedShiftsArray);
+
+                MyModel.showSettings('/views/components/editinvoice/editinvoice.xml');
+                MyModel.set('settingsTitle', 'Create Invoice');
             } else {
                 this.selectedFamilyToInvoice = false;
-                alert('The family you chose does not have any uninvoiced shifts, they\'re all paid up!')
+                alert('You don\'t have any uninvoiced shifts, so you can\'t create an invoice right now.')
             }
+        } else {
+            MyModel.showSettings('/views/components/editinvoice/editinvoice.xml');
+            MyModel.set('settingsTitle', 'Create Invoice');
         }
     }
 
@@ -686,7 +691,6 @@ export class HomeModel extends Observable {
                 shift = MyModel.addedShiftsMap[args.object.id];
             }
         }
-        
         if (!shift) {
             MyModel.showSettings('/views/components/endshift/endshift.xml');
             MyModel.set('settingsTitle', 'Add Shift');
@@ -799,6 +803,14 @@ export class HomeModel extends Observable {
         let newTotal:any = (earned.total_earned/families.length).toFixed(2);
         // console.log('each contribution: ' + newTotal);
         MyModel.set('endShiftFinalTotal', '$' + (newTotal*families.length).toFixed(2));
+        let contributionTotal = 0;
+        if (editingShift.id && editingShift.contributions) {
+            let contributionTotal = 0;
+            for (let x in editingShift.contributions) {
+                contributionTotal += parseFloat(editingShift.contributions[x]);
+            }
+            MyModel.set('endShiftFinalTotal', '$' + contributionTotal.toFixed(2));
+        }
 
         if (families.length > 1) {
             for (var i = 0; families.length > i; i++) {
@@ -817,7 +829,7 @@ export class HomeModel extends Observable {
                     if (args.propertyName == 'contribution') {
                         let finalTotal:number = 0;
                         let invalidNumbers = false;
-                        for (var x = 0; MyModel.families.length > x; x++) {
+                        for (let x = 0; MyModel.families.length > x; x++) {
                             if (!MyModel.families.getItem(x).get('contribution')) MyModel.families.getItem(x).set('contribution', 0)
                             if (isNaN(MyModel.families.getItem(x).get('contribution'))) {
                                 invalidNumbers = true;
@@ -837,7 +849,36 @@ export class HomeModel extends Observable {
             }
         } else {
             // theres only one family, so always update the contributions.
-            families.getItem(0).set('contribution', newTotal);
+            if (editingShift.id && editingShift.contributions) {
+                if (editingShift.contributions[families.getItem(0).id]) {
+                    families.getItem(0).set('contribution', editingShift.contributions[families.getItem(0).id]);
+                } else {
+                    families.getItem(0).set('contribution', '0.00');
+                }
+            } else {
+                families.getItem(0).set('contribution', newTotal);
+            }
+
+            families.getItem(0).on(Observable.propertyChangeEvent, (args: PropertyChangeData) => {
+                if (args.propertyName == 'contribution') {
+                    let finalTotal:number = 0;
+                    let invalidNumbers = false;
+                    for (let x = 0; MyModel.families.length > x; x++) {
+                        if (!MyModel.families.getItem(x).get('contribution')) MyModel.families.getItem(x).set('contribution', 0)
+                        if (isNaN(MyModel.families.getItem(x).get('contribution'))) {
+                            invalidNumbers = true;
+                        } else {
+                            finalTotal += parseFloat(MyModel.families.getItem(x).get('contribution'));
+                        }
+                    }
+                    if (invalidNumbers) {
+                        MyModel.set('endShiftFinalTotal', 'Enter valid numbers.');
+                    } else {
+                        MyModel.set('endShiftFinalTotal', '$' + finalTotal.toFixed(2));
+                    }
+                    
+                }
+            })
         }
         
     }
@@ -1192,6 +1233,7 @@ export class HomeModel extends Observable {
         while (this.thisWeek.length) this.thisWeek.pop();
         // calculate hours worked and money earned.
         let thisWeekMinutesWorked = 0;
+        let thisWeekTotalEarned = 0;
         for (var s = 0; shiftsArray.length > s; s++) {
             // add the shift if it hasnt been added already and if it is in the current week. OR if the shift has not been ended.
             if (!this.addedShiftsMap[shiftsArray[s].id]) {
@@ -1268,7 +1310,9 @@ export class HomeModel extends Observable {
 
         while (this.sectionedShifts.length) this.sectionedShifts.pop();
 
+
         for (var w in weeks) {
+            let weekContributionTotal = 0;
             for (var iw = 0; weeks[w].shifts.length > iw; iw++) {
                 var myShift = weeks[w].shifts[iw]
                 if (iw == 0) {
@@ -1294,6 +1338,47 @@ export class HomeModel extends Observable {
                 weeks[w].regular_earned += myShift.regular_earned-0;
                 if (myShift.overtime_earned) weeks[w].overtime_earned += myShift.overtime_earned-0;
                 myShift.total_earned = ((myShift.regular_earned-0) + (myShift.overtime_earned-0 || 0)).toFixed(2)
+                console.dir(JSON.stringify(myShift.contributions));
+
+                // If contributions are set, display what they set as contributions as it may be
+                // different from what they earned based on time worked and hourly rates.
+                myShift.total_contributions = 0;
+                myShift.display_earned = myShift.total_earned;
+                if (myShift.contributions) {
+                    for (let x in myShift.contributions) {
+                        myShift.total_contributions += parseFloat(myShift.contributions[x]);
+                        weekContributionTotal += parseFloat(myShift.contributions[x]);
+                    }
+                    myShift.display_earned = myShift.total_contributions.toFixed(2);
+                } else {
+                    weekContributionTotal += parseFloat(myShift.total_earned);
+                }
+                
+                //let percentageOf: number = parseFloat(((myShift.display_earned*100)/myShift.total_earned).toFixed(0));
+                
+                // if (percentageOf > 100) {
+                //     myShift.earned_difference = percentageOf-100;
+                // } else if (percentageOf < 100) {
+                //     myShift.earned_difference = 100 - percentageOf;
+                // } else {
+                //     myShift.earned_difference = false;
+                // }
+
+                if (parseFloat(myShift.total_earned) > parseFloat(myShift.display_earned)) {
+                    myShift.earned_difference = '$' + (myShift.total_earned - myShift.display_earned).toFixed(2) + ' Under';
+                } else if (parseFloat(myShift.total_earned) < parseFloat(myShift.display_earned)) {
+                    myShift.earned_difference = '$' + (myShift.display_earned - myShift.total_earned).toFixed(2) + ' Over';
+                } else {
+                    myShift.earned_difference = false;
+                }
+                //myShift.earned_difference
+                console.log(myShift.title + ' from ' + myShift.display_hours)
+                console.log('total earned: ' + myShift.total_earned);
+                console.log('display earned: ' + myShift.display_earned);
+                console.log('difference: ' + myShift.earned_difference);
+                console.log(myShift.total_contributions);
+
+
 
                 myShift.display_date = moment(myShift.start_time).format('dddd MMM DD, YYYY');
                 myShift.display_timing = moment(myShift.start_time).format('h:mma') + ' to ' + moment(myShift.end_time).format('h:mma');
@@ -1317,13 +1402,16 @@ export class HomeModel extends Observable {
             if (weeks[w].total_minutes > 2400) {
                 weeks[w].regular_minutes = 2400;
                 weeks[w].overtime_minutes = weeks[w].total_minutes-2400;
+
+                
             } else {
                 weeks[w].regular_minutes = weeks[w].total_minutes;
             }
 
             
             // setup sectioned array.
-            var headerObj = {
+            console.log('week contribution total: ' + weekContributionTotal)
+            var headerObj: any = {
                 "id": weeks[w].title,
                 "start_time": moment(weeks[w].shifts[weeks[w].shifts.length-1].start_time).add('10', 'minutes').format('YYYY-MM-DD HH:mm:ss'),
                 "header": true,
@@ -1331,13 +1419,24 @@ export class HomeModel extends Observable {
                 "hours_worked": weeks[w].hours_worked,
                 "regular_earned": weeks[w].regular_earned,
                 "overtime_earned": weeks[w].overtime_earned,
+                "total_contributions": weekContributionTotal.toFixed(2),
                 "time_worked": shiftService.calculateShiftHoursWorked(false, false, weeks[w].total_minutes).time_worked,
                 "total_earned": weeks[w].total_earned
+            }
+            if (weeks[w].total_minutes > 2400) {
+                if (weeks[w].overtime_minutes /60 < 1) {
+                    headerObj.overtime_hours = weeks[w].overtime_minutes + ' MINUTES';
+                } else if ((weeks[w].overtime_minutes/60) % 1 === 0) {
+                    headerObj.overtime_hours = Math.floor(weeks[w].overtime_minutes/60) + ' HOURS';
+                } else {
+                    let minutesOnHour = weeks[w].overtime_hours - (Math.floor(weeks[w].overtime_hours/60) * 60);
+                    headerObj.overtime_hours  = Math.floor(weeks[w].overtime_hours/60) + ' HOUR' + (Math.floor(weeks[w].overtime_hours/60) == 1 ? '' : 'S') + ' ' + minutesOnHour + ' MINUTE' + (minutesOnHour == 1 ? '' : 'S');
+                }
             }
             //console.dir(headerObj);
             this.sectionedShifts.push(observableFromObject(headerObj));
 
-            var hasOpenShift = false;
+
             for (var ix = 0; weeks[w].shifts.length > ix; ix++) {
                 //console.dir(weeks[w].shifts[ix]);
                 this.sectionedShifts.push(observableFromObject(weeks[w].shifts[ix]));
@@ -1349,13 +1448,27 @@ export class HomeModel extends Observable {
         // while (this.sectionedShifts.length) this.sectionedShifts.pop();
         
         this.weeks = weeks;
-
+        let noEndTimeMinutesWorked = 0;
+        let hasOpenShift = false;
         this.thisWeek.forEach(element => {
             var compareA = moment();
             if (element.get('end_time')) compareA = moment(element.get('end_time'));
             var minutesWorked = compareA.diff(moment(element.get('start_time')), 'minutes')
             thisWeekMinutesWorked += minutesWorked;
+            if (element.get('end_time')) {
+                if (element.get('contributions')) {
+                    for (let x in element.get('contributions')) {
+                        thisWeekTotalEarned += parseFloat(element.get('contributions')[x]);
+                    }
+                }
+            } else {
+                hasOpenShift = true;
+                let compareA = moment();
+                noEndTimeMinutesWorked += compareA.diff(moment(element.get('start_time')), 'minutes');
+            }
         });
+        console.log('no end time minutes worked: ' + noEndTimeMinutesWorked)
+        console.log('this week total earned: ' + thisWeekTotalEarned);
 
         let minuteRate = parseFloat(this.user.hourlyRate)/60;
         let overtimeMinuteRate = parseFloat(this.user.overtimeRate)/60;
@@ -1373,8 +1486,18 @@ export class HomeModel extends Observable {
         this.set('thisWeekMinutesWorked', thisWeekMinutesWorked);
         let timeWorked = '0 HOURS';
         if (thisWeekMinutesWorked) timeWorked = shiftService.calculateShiftHoursWorked(false, false, thisWeekMinutesWorked).time_worked;
-        
         this.set('hours_worked', timeWorked);
+
+        if (hasOpenShift) {
+            let completedShiftsMinutesWorked = thisWeekMinutesWorked - noEndTimeMinutesWorked;
+            let openShiftEarned = (noEndTimeMinutesWorked*minuteRate);
+            console.log('open shift earned: ' + openShiftEarned);
+            this.set('display_earned', (thisWeekTotalEarned + openShiftEarned).toFixed(2));
+        } else {
+            this.set('display_earned', thisWeekTotalEarned);
+        }
+        
+
     }
 
     public processInvoices(invoices) {

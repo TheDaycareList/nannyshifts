@@ -7,7 +7,7 @@ import * as dialogs from 'ui/dialogs';
 import * as appSettings from 'application-settings';
 import * as moment from 'moment';
 import * as frame from 'ui/frame';
-import { UserService } from '../shared/user.service';
+import { UserService, User } from '../shared/user.service';
 import { AnimationDefinition } from "ui/animation";
 import { AnimationCurve } from "ui/enums";
 
@@ -19,12 +19,27 @@ export class UserSetup extends Observable {
         super();
         userService = new UserService();
         MyModel = this;
+
+        let uid = JSON.parse(appSettings.getString('uid'));
+        console.log(uid);
+        console.dir(this.user.families);
+        if (this.user.families) {
+            for (let x in this.user.families) {
+                this.families.push(this.user.families[x]);
+            }
+        }
+        if (!this.families.length) {
+            this.families.push({
+                name: "None entered...",
+                email: false
+            });
+        }
     }
-
-    
-
-    public hourlyRate: number;
-    public overtimeRate: number;
+    public user: User = JSON.parse(appSettings.getString('userData'));
+    public hourlyRate: any = this.user.hourlyRate ? parseFloat(this.user.hourlyRate) : '';
+    public overtimeRate: any = this.user.overtimeRate ? parseFloat(this.user.overtimeRate) : '';
+    public first_name: string = this.user.first_name;
+    public last_name: string = this.user.last_name;
     public saving: boolean = false;
     public families = new ObservableArray([]);
     public addingFamily: boolean = false;
@@ -32,10 +47,12 @@ export class UserSetup extends Observable {
     public addingFamilyEmail: string;
 
     public saveRates() {
-        if (this.hourlyRate && this.overtimeRate && this.families.length) {
+        if (this.hourlyRate && this.overtimeRate && this.families.length && this.families.getItem(0).email && this.first_name && this.last_name) {
             let args = {
                 hourlyRate: this.hourlyRate,
-                overtimeRate: this.overtimeRate
+                overtimeRate: this.overtimeRate,
+                first_name: this.first_name,
+                last_name: this.last_name
             }
             userService.updateUser(args).then(result => {
                 console.log('yay!');
@@ -47,10 +64,12 @@ export class UserSetup extends Observable {
                 })
             })
         } else {
-            if (!this.families.length) {
-                alert('Please enter at least one family.');
-            } else {
+            if (!this.hourlyRate || !this.overtimeRate) {
                 alert('Please enter your hourly rate and overtime rate. If they are the same, enter it twice!')
+            } else if (!this.first_name || !this.last_name) {
+                alert('Please enter your name, we use it when emailing your families on your behalf.')
+            } else if (!this.families.length || !this.families.getItem(0).email) {
+                alert('Please enter at least one family.');
             }
         }
     }
@@ -87,6 +106,8 @@ export class UserSetup extends Observable {
         this.closeAddFamily();
         userService.addFamily(familyObj).then((result:any) => {
             familyObj.id = result.key;
+            if (this.families.length && !this.families.getItem(0).email) this.families.pop();
+
             this.families.push(familyObj)
             let uid = JSON.parse(appSettings.getString('uid'));
             userService.getUser(uid).then(() => {
@@ -129,6 +150,12 @@ export class UserSetup extends Observable {
                         if (element.id == famId) deleteIndex = index;
                     });
                     MyModel.families.splice(deleteIndex, 1)
+                    if (!MyModel.families.length) {
+                        MyModel.families.push({
+                            name: "None entered...",
+                            email: false
+                        });
+                    }
                 })
             }
         })

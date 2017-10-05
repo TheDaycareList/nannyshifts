@@ -32,6 +32,7 @@
 
             <StackLayout>
                 <Label text="CONTRIBUTIONS" class="setting_section_header" horizontalAlignment="center" />
+                <Label class="note" textWrap="true" text="Here you can adjust the amount each family owes for this shift. Final Total updates as you make adjustments to each family's contribution." marginBottom="10" marginTop="5" horizontalAlignment="center" />
                 <Label class="note" text="(Tap to Edit)" marginBottom="10" marginTop="5" horizontalAlignment="center" />
                 <Repeater items="{{ families }}" style="border-radius: 10;">
                     <Repeater.itemsLayout>

@@ -1,19 +1,22 @@
 <StackLayout>
-    <Label text="HOURLY RATE" style="font-size: 12; margin: 10 0 0 10;" />
-    <TextField id="hourly_rate" class="dark" text="{{user.hourlyRate}}" autocapitalizationType="words" placeholder="Enter your hourly rate..." />
+    <ScrollView id="settings_scroller" scrollEvent="{{settingsScroll}}">
+        <StackLayout>
+            <Label text="HOURLY RATE" style="font-size: 12; margin: 10 0 0 10;" />
+            <TextField id="hourly_rate" class="dark" text="{{user.hourlyRate}}" autocapitalizationType="words" placeholder="Enter your hourly rate..." />
 
-    <Label text="OVERTIME RATE" style="font-size: 12; margin: 10 0 0 10;" />
-    <TextField id="overtime_rate" class="dark" text="{{user.overtimeRate}}" autocapitalizationType="none" placeholder="Enter your overtime rate..." />
+            <Label text="OVERTIME RATE" style="font-size: 12; margin: 10 0 0 10;" />
+            <TextField id="overtime_rate" class="dark" text="{{user.overtimeRate}}" autocapitalizationType="none" placeholder="Enter your overtime rate..." />
 
-    <Label text="ACCOUNT EMAIL" style="font-size: 12; margin: 10 0 0 10;" />
-    <TextField id="email" class="dark" text="{{user.email}}" autocapitalizationType="none" placeholder="Enter your email..." />
+            <Label text="ACCOUNT EMAIL" style="font-size: 12; margin: 10 0 0 10;" />
+            <TextField id="email" class="dark" text="{{user.email}}" autocapitalizationType="none" placeholder="Enter your email..." />
 
-    <Label text="FIRST NAME" style="font-size: 12; margin: 10 0 0 10;" />
-    <TextField id="first_name" class="dark" text="{{user.first_name ? user.first_name : ''}}" autocapitalizationType="none" placeholder="Enter your first name..." />
+            <Label text="FIRST NAME" style="font-size: 12; margin: 10 0 0 10;" />
+            <TextField id="first_name" class="dark" text="{{user.first_name ? user.first_name : ''}}" autocapitalizationType="none" placeholder="Enter your first name..." />
 
-    <Label text="LAST NAME" style="font-size: 12; margin: 10 0 0 10;" />
-    <TextField id="last_name" class="dark" text="{{user.last_name ? user.last_name : ''}}" autocapitalizationType="none" placeholder="Enter your last nae..." />
+            <Label text="LAST NAME" style="font-size: 12; margin: 10 0 0 10;" />
+            <TextField id="last_name" class="dark" text="{{user.last_name ? user.last_name : ''}}" autocapitalizationType="none" placeholder="Enter your last nae..." />
 
-    <Button class="purpleBtn" text="SAVE" tap="{{saveRates}}" style="margin-top: 40;" />
+            <Button class="purpleBtn" text="SAVE" tap="{{saveRates}}" style="margin-top: 40; margin-bottom: 50;" />
+        </StackLayout>
+    </ScrollView>
 </StackLayout>
-

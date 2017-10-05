@@ -19,34 +19,45 @@
                         <TextField hint="Enter overtime rate..." col="2" keyboardType="number" style="background-color: rgba(255,255,255,0.7);" text="{{overtimeRate}}"></TextField>
                     </GridLayout>
 
-                    <Label class="note" text="Overtime is calculated based on a 40 hour work week." />
-                    
+                    <Label class="note" style="text-align: center; margin-top: 10;" text="Overtime is calculated based on a 40 hour work week." />
 
-                    <Label text="YOUR FAMILIES" style="text-align: center; margin-top: 30; font-weight: bold; color: #333; font-size: 15;" />
+                    <Label text="YOUR NAME" style="text-align: center; margin-bottom: 5; margin-top: 30; font-weight: bold; color: #333; font-size: 15;" />
+                    <GridLayout columns="*, 2, *" style="margin: 0 10; border-radius: 10; ">
+                        <TextField hint="Enter first name..." style="background-color: rgba(255,255,255,0.7);" text="{{first_name}}"></TextField>
+                        <TextField hint="Enter last name..." col="2" style="background-color: rgba(255,255,255,0.7);" text="{{last_name}}"></TextField>
+                    </GridLayout>
+
+                    <Label text="YOUR FAMILIES" style="text-align: center; margin-top: 30; margin-bottom: -5; font-weight: bold; color: #333; font-size: 15;" />
+
                     <Repeater items="{{ families }}" style="border-radius: 10; margin: 10;">
                         <Repeater.itemsLayout>
                             <StackLayout />
                         </Repeater.itemsLayout>
                         <Repeater.itemTemplate>
+                        
                             <StackLayout style="background-color: rgba(255,255,255,0.7);">
                                 <GridLayout columns="*, 80" rows="1, 50" >
                                     <StackLayout colSpan="2" visibility="{{ isFirst ? 'collapsed' : 'visible' }}" style="height: 1; background-color: rgba(0,0,0,0.1);" />
-                                    <Label row="1" col="0" text="{{name}}" style="margin-left: 5;" />
+                                    <StackLayout row="1" col="0" verticalAlignment="middle">
+                                        <Label text="{{name}}" style="margin-left: 5;" />
+                                        <Label text="{{email}}" visibility="{{ email ? 'visible' : 'collapsed' }}" style="margin-left: 5; font-size: 12; color: gray;" />
+                                    </StackLayout>
+                                    
                                     <StackLayout orientation="horizontal" col="1" row="1" horizontalAlignment="right">
-                                        <Label text="&#xf057;" class="fa" style="font-size: 24; color: red;  margin-right: 15;" id="{{id}}" tap="{{$parents['Page'].removeFamily}}" />
+                                        <Label text="&#xf057;" class="fa" style="font-size: 24; color: red;  margin-right: 15;" visibility="{{ email ? 'visible' : 'collapsed' }}" id="{{id}}" tap="{{$parents['Page'].removeFamily}}" />
                                     </StackLayout>
                                 </GridLayout>
                             </StackLayout>
                         </Repeater.itemTemplate>
-                    </Repeater>
+                    </Repeater>    
+                
                     <Button text="Add a Family" style="font-weight: bold; color: #6700be; margin: 20" tap="{{showAddFamily}}" />
 
-                    <GridLayout class="spinnyBtn">
+                    <GridLayout class="spinnyBtn" marginBottom="50">
                         <ActivityIndicator busy="{{saving}}" visibility="{{saving ? 'visible' : 'collapsed'}}" color="white" marginTop="10"></ActivityIndicator>
                         <Button text="Save" tap="{{saveRates}}"></Button>
                     </GridLayout>
 
-                    <!-- <Button text="kill" tap="{{kill}}" /> -->
                 </StackLayout>
             </ScrollView>
             <GridLayout id="add_family" rows="*, auto, *" columns="20, *, 20" visibility="{{ addingFamily ? 'visible' : 'collapsed' }}">

@@ -26,6 +26,15 @@ export class UserService {
                         }
                     }
                     if (user) {
+                        if (user.families) {
+                            for (let x in user.families) {
+                                if (user.families[x].deleted) {
+                                    delete user.families[x];
+                                } else {
+                                    user.families[x].id = x;
+                                }
+                            }
+                        }
                         appSettings.setString('userData', JSON.stringify(user));
                         resolve(user)
                     } else {

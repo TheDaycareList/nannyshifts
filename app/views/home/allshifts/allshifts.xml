@@ -7,7 +7,7 @@
                     <GridLayout columns="*" rows="25, auto" class="week_header_data">
                         <Label text="{{title}}" class="week_title" />
                         <StackLayout row="1">
-                            <Label text="{{overtime_earned ? (time_worked + ' • $' + total_earned + ' (Includes ' + '$' + overtime_earned + ' OT)') : time_worked + ' • $' + total_earned}}" textWrap="true" class="stats" />
+                            <Label text="{{overtime_earned ? (time_worked + ' • $' + total_contributions + ' (' + overtime_hours + ' OT)') : time_worked + ' • $' + total_contributions}}" textWrap="true" class="stats" />
                         </StackLayout>
                     </GridLayout>
                 </StackLayout>
@@ -16,7 +16,7 @@
                 <GridLayout class="sectioned_shift_item" columns="*">
                     <StackLayout>
                         <Label text="{{title + ' from ' + display_hours}}" textWrap="true" class="title" />
-                        <Label text="{{time_worked + ' • $' + total_earned}}" class="start_end" />
+                        <Label text="{{time_worked + ' • $' + display_earned}}" class="start_end" />
                         <Label text="{{'Invoiced: ' + invoiced_families_string}}" textWrap="true" class="invoiced_text" visibility="{{ invoiced ? 'visible' : 'collapsed' }}"/>    
                         <Label text="{{'Not Invoiced: ' + uninvoiced_families_string}}" textWrap="true" class="uninvoiced_text" visibility="{{ uninvoiced_families_string ? 'visible' : 'collapsed' }}"/>    
                     </StackLayout>
@@ -28,7 +28,5 @@
         <Label text="You have not entered any shifts yet." style="color: gray; font-size: 18; margin-bottom: 10; text-align: center;" />    
         <Label text="Click the + icon above to get started." style="color: gray; font-size: 13; text-align: center;" />    
     </StackLayout>
-    
-
 </GridLayout>
 
