@@ -1,0 +1,46 @@
+<Page loaded="loaded" actionBarHidden="true">
+    <StackLayout height="100%">
+        <StackLayout height="20" backgroundColor="#6700be"></StackLayout>
+        <GridLayout>
+            <Image src="res://lightbg" stretch="aspectFill"></Image>
+            <ScrollView>
+                <StackLayout style="padding: 10;">
+                    <Label text="Welcome." marginTop="50" fontSize="30" marginBottom="50" style="font-weight: bold; color: #6700be; text-align: center;" />
+                    <Label textWrap="true" text="Scroll through these simple instructions to get an idea of how to use Nanny Shifts." marginBottom="10" />
+
+                    <Button text="Skip This" style="margin-top: 20; color: #6700be;" tap="{{doneTutorial}}" />
+                    <Label text="You can view it later." style="font-size: 13; color: gray; text-align: center;" marginBottom="50" />
+
+
+                    <Label style="color: #6700be; font-weight: bold; font-size: 20;" text="This Week" />
+                    <Label style="font-size: 16;" textWrap="true" text="With Nanny Shifts, you can start a shift as soon as you open the app, and the This Week tab gives you a running tally of how many hours you've worked this week and how much money you've earned, based on your hourly rates." />
+                    <Image src="res://startshift" width="300" style="border-radius: 5; margin: 30 0;" />
+                    <Label style="font-size: 16;" textWrap="true" text="To edit a shift from this week, simply tap on it. To edit shifts from past weeks, head over to the All Shifts tab." />
+
+                    <Label style="color: #6700be; font-weight: bold; font-size: 20; margin-top: 50;" text="All Shifts" />
+                    <Label style="font-size: 16;" textWrap="true" text="From the All Shifts tab, you can see all the shifts you've worked and how much you've made each week. You can also get a snapshot of which shifts you haven't invoiced yet and which you have. " />
+                    <Image src="res://shiftitem" width="300" style="border-radius: 5; margin: 30 0;" />
+                    <Label style="font-size: 16;" textWrap="true" text="Tap a shift to edit it or delete it." />
+
+                    <Label style="color: #6700be; font-weight: bold; font-size: 20; margin-top: 50;" text="Editing/Saving Shifts" />
+                    <Label style="font-size: 16;" textWrap="true" text="When you edit or create a new shift, you enter the start and end times, and Nanny Shifts calculates how much you're owed for the shift. The total is automatically split amongst all your families, but you can edit the contributions just by tapping the numbers and editing them." />
+                    <Image src="res://editshift" width="300" style="border-radius: 5; margin: 30 0;" />
+
+                    <Label style="color: #6700be; font-weight: bold; font-size: 20; margin-top: 50;" text="Invoices" />
+                    <Label style="font-size: 16;" textWrap="true" text="When you're ready to get paid for a block of shifts, you create invoices for each family. Tap the + sign, choose the family to invoice, and Nanny Shifts automatically selects all the shifts that family has not been invoiced for." />
+                    <Image src="res://addinvoice" width="300" style="border-radius: 5; margin: 30 0;" />
+                    <Label style="font-size: 16;" textWrap="true" text="The Invoices tab lists invoices you have created in the past. When you send an invoice, an email with the invoice's details is sent to the family, prompting them to pay you. When they do, you can mark invoices as paid. At the top of the invoices tab you can see how much money you are owed from your unpaid invoices." />
+                    <Image src="res://invoices" width="300" style="border-radius: 5; margin: 30 0;" />
+                    <Label style="font-size: 16;" textWrap="true" text="Tap on an invoice and choose View to view the details. The invoice detail screen lists all the times you've sent an email to the family prompting them to pay, and lists all the shifts included in the invoice. Tap the menu icon to mark it as paid or unpaid, or to delete the invoice." />
+                    <Image src="res://invoicedetail" width="300" style="border-radius: 5; margin: 30 0;" />
+
+                    <Label style="font-size: 16; margin: 50 0;" textWrap="true" text="That's about it! Get in touch with any questions or feedback, we'd love to hear from you!" />
+
+                    <Button text="Continue" class="purpleBtn" marginBottom="50" tap="{{doneTutorial}}" />
+
+
+                </StackLayout>
+            </ScrollView>
+        </GridLayout>
+    </StackLayout>
+</Page>

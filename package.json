@@ -1,5 +1,5 @@
 {
-  "description": "NativeScript Application",
+  "description": "Nanny Shifts",
   "license": "SEE LICENSE IN <your-license-filename>",
   "readme": "NativeScript Application",
   "repository": "<fill-your-repository-here>",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "moment": "^2.18.1",
+    "nativescript-email": "^1.5.1",
     "nativescript-iqkeyboardmanager": "^1.1.0",
     "nativescript-plugin-firebase": "^4.0.6",
     "nativescript-pulltorefresh": "^2.0.2",

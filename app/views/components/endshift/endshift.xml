@@ -19,18 +19,18 @@
                 <Label text="End Time " horizontalAlignment="right" style="color: gray;" />
                 <Label col="1" text="{{editingShiftEndTime}}" tap="{{changeShiftEndTime}}" style="color: #6700be; font-weight: bold; padding: 5 10; margin: 5 0;"/>
             </GridLayout>
-            <GridLayout columns="1*, 2*" rows="auto">
+            <GridLayout columns="1*, 2*" rows="auto" visibility="{{ hasSelectedStartAndEndTimes ? 'visible' : 'collapsed' }}">
                 <Label text="Hours Worked" horizontalAlignment="right" style="color: gray;" />
                 <Label col="1" text="{{endShiftTotalWorked}}" textWrap="true" style="font-weight: bold; padding: 5 10; margin: 5 0;"/>
             </GridLayout>
-            <GridLayout columns="1*, 2*" rows="auto, auto">
+            <GridLayout columns="1*, 2*" rows="auto, auto" visibility="{{ hasSelectedStartAndEndTimes ? 'visible' : 'collapsed' }}">
                 <Label text="Total Earned" horizontalAlignment="right" style="color: gray;" />
                 <Label col="1" text="{{endShiftTotalEarned}}" style="font-weight: bold; padding: 5 10; margin: 5 0;"/>
                 <Label col="1" row="1" class="note" text="{{'Includes $' + endShiftOvertimeEarned + ' overtime pay.'}}" visibility="{{ endShiftOvertimeEarned ? 'visible' : 'collapsed' }}" style="padding: 0 10;" />
             </GridLayout>
             <StackLayout margin="10 0;" />
 
-            <StackLayout>
+            <StackLayout visibility="{{ hasSelectedStartAndEndTimes ? 'visible' : 'collapsed' }}">
                 <Label text="CONTRIBUTIONS" class="setting_section_header" horizontalAlignment="center" />
                 <Label class="note" textWrap="true" text="Here you can adjust the amount each family owes for this shift. Final Total updates as you make adjustments to each family's contribution." marginBottom="10" marginTop="5" horizontalAlignment="center" />
                 <Label class="note" text="(Tap to Edit)" marginBottom="10" marginTop="5" horizontalAlignment="center" />

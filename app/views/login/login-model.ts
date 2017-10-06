@@ -15,8 +15,8 @@ export class LoginModel extends Observable {
 
     private userService = new UserService();
 
-    public email: string = 'dave@davecoffin.com';
-    public password: string = 'Endien1.';
+    public email: string = '';
+    public password: string = '';
     public password2: string;
     public loggingIn: boolean = true;
 
@@ -48,6 +48,14 @@ export class LoginModel extends Observable {
             '/users/', 
             options
         );
+    }
+
+    public pressedReturn() {
+        if (this.loggingIn) {
+            this.login();
+        } else {
+            this.signup();
+        }
     }
 
     public signup() {
@@ -84,6 +92,8 @@ export class LoginModel extends Observable {
                     okButtonText: "OK, got it"
                 })
             });
+        } else {
+            alert('Please enter an email and a password.')
         }
     }
 
@@ -123,6 +133,8 @@ export class LoginModel extends Observable {
             }, (errorMessage) => {
                 console.log(errorMessage)
             });
+        } else {
+            alert('Please enter an email and password.')
         }
     }
 }

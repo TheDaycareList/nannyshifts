@@ -24,10 +24,12 @@
     background-color: #6700be;
     color: white; 
     font-weight: bold;
+    text-align: center;
 }
 
 .editButton {
     background-color: rgba(255,255,255,0.2);
     color: #6700be; 
     font-weight: bold;
+    text-align: center;
 }

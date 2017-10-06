@@ -24,14 +24,14 @@
                             <StackLayout class="border" row="2" colSpan="2" />
                             <Repeater items="{{thisWeek}}">
                                 <Repeater.itemTemplate>
-                                    <GridLayout columns="*, 60" rows="auto, 1" class="{{!end_time ? 'today shift_item' : 'shift_item'}}" id="{{id}}">
+                                    <GridLayout columns="*, 60" rows="auto, 1" class="{{!end_time ? 'today shift_item' : 'shift_item'}}" tap="{{$parents['Page'].showEditShift}}" id="{{id}}">
                                         <StackLayout style.padding="10 5">
                                             <Label text="{{display_date}}" class="{{!end_time ? 'shift_date today_date' : 'shift_date'}}" />
                                             <Label text="{{display_timing}}" color="#333" class="shift_time mont" textWrap="true" />
                                             <Label text="{{time_worked}}" class="hours_worked" color="gray" textWrap="true" />
                                         </StackLayout>
-                                        <Button class="endButton" text="END" visibility="{{!end_time ? 'visible' : 'collapsed'}}" id="{{id}}" tap="{{$parents['Page'].showEditShift}}" col="1" rowSpan="2" style="" />
-                                        <Button class="editButton" text="EDIT" visibility="{{!end_time ? 'collapsed' : 'visible'}}" id="{{id}}" tap="{{$parents['Page'].showEditShift}}" col="1" rowSpan="2" style="color: #6700be;" />
+                                        <Label class="endButton" text="END" visibility="{{!end_time ? 'visible' : 'collapsed'}}" id="{{id}}" col="1" rowSpan="2" style="" />
+                                        <Label class="editButton" text="EDIT" visibility="{{!end_time ? 'collapsed' : 'visible'}}" id="{{id}}" col="1" rowSpan="2" style="color: #6700be;" />
                                         <StackLayout class="border" row="2" colSpan="2" />
                                     </GridLayout>
                                 </Repeater.itemTemplate>

@@ -1,0 +1,29 @@
+Page {
+    margin-top: -20;
+}
+
+.logo {
+    margin-bottom: 10;
+}
+
+TextField {
+    padding: 15 10;
+    font-size: 13;
+}
+
+.spinnyBtn Button {
+    border-radius: 5;
+    color:white;
+    font-weight: bold;
+    padding: 10;
+    width: 200;
+    background-color: #6700be;
+    font-size: 18;
+    margin-top: 10;
+}
+
+.families_added {
+    background-color: rgba(255,255,255,0.1);
+    font-weight: bold;
+    padding: 10 5;
+}

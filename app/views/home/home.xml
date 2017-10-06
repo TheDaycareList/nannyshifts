@@ -111,7 +111,9 @@
                                             <StackLayout row="2">
                                                 <!-- <Button text="Log User" class="transBtn" tap="{{logUser}}" style="margin: 5 0;" />
                                                 <Button text="Test Email" class="transBtn" tap="{{sendTestEmail}}" style="margin: 5 0;" /> -->
-                                                <Button text="Log Out" class="transBtn" tap="{{kill}}" style="margin: 5 0;" />
+                                                <Button text="View Tutorial" class="transBtn" tap="{{viewTutorial}}" style="margin: 5 0;" />
+                                                <Button text="Send Feedback/Ask Question" class="transBtn" tap="{{contact}}" style="margin: 5 0;" />
+                                                <Button text="Log Out" class="transBtn" tap="{{kill}}" style="margin: 5 0 20 0;" />
                                             </StackLayout>
                                         </GridLayout>
                                     </StackLayout>

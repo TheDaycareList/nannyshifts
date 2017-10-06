@@ -24,6 +24,7 @@ import { RadSideDrawer } from "nativescript-telerik-ui/sidedrawer";
 import { SettingsModel } from '../modals/settings/settings-model';
 import { SelectedIndexChangedEventData, TabView } from "ui/tab-view";
 import { Slider } from "ui/slider";
+import * as email from 'nativescript-email';
 import * as picker from "../components/picker/picker";
 let userService: UserService;
 let shiftService: ShiftService;
@@ -101,6 +102,7 @@ export class HomeModel extends Observable {
     public allShiftsMap: any = {};
     public weeks = {};
 
+    public hasSelectedStartAndEndTimes: boolean = false;
     
 
     public rebuildAllData() {
@@ -123,6 +125,18 @@ export class HomeModel extends Observable {
     public pageLoaded(myPage: Page) {
         this.page = myPage;
         this.page.bindingContext = this;
+
+        if (!appSettings.getBoolean('seenTutorial')) {
+            frame.topmost().navigate({
+                moduleName: '/views/tutorial/tutorial',
+                backstackVisible: false,
+                animated: false,
+                clearHistory: true
+            })
+            return;
+        }
+
+
         this.page.getViewById('tabview').on('selectedIndexChanged', (args:SelectedIndexChangedEventData) => {
             this.set('selectedIndex', args.newIndex);
             if (args.newIndex == 0) {
@@ -139,6 +153,39 @@ export class HomeModel extends Observable {
         })
         let tabView: TabView = this.page.getViewById('tabview')
         this.selectedIndex = tabView.selectedIndex;
+    }
+
+    public viewTutorial() {
+        frame.topmost().navigate({
+            moduleName: '/views/tutorial/tutorial',
+            backstackVisible: false,
+            animated: true,
+            clearHistory: true,
+            transition: {
+                name: "flip",
+                duration: 500,
+                curve: AnimationCurve.cubicBezier(0.1, 0.1, 0.1, 1)
+            }
+        })
+    }
+
+    public contact() {
+        email.available().then(function(avail) {
+            if (avail) {
+                email.compose({
+                    subject: "Nanny Shifts question...",
+                    body: "",
+                    to: ['dave@cubbynotes.com']
+                }).then(function() {
+                    //console.log("Email composer closed");
+                }, function(err) {
+                    //console.log("Error: " + err);
+                });
+            } else {
+                dialogs.alert('It doesnt\'t look like you have email set up on this device, to contact us just send an email to dave@cubbynotes.com.')
+            }
+            
+        })
     }
 
     public showMenu() {
@@ -697,49 +744,51 @@ export class HomeModel extends Observable {
             editingShift = {};
             let startTime = moment().format('YYYY-MM-DD') + ' 09:00:00';
             let endTime = moment().format('YYYY-MM-DD') + ' 17:00:00';
-            MyModel.set('editingShiftStartDate', moment().format('MMM Do, YYYY'))
-            MyModel.set('editingShiftStartTime', moment(startTime).format('h:mma'))
+            MyModel.set('editingShiftStartDate', 'Choose...')
+            MyModel.set('editingShiftStartTime', 'Choose...')
             MyModel.set('selectedStartDate', moment().format('YYYY-MM-DD'));
             MyModel.set('selectedStartTime', moment(startTime).format('HH:mm'))
 
-            MyModel.set('editingShiftEndDate', moment().format('MMM Do, YYYY'))
-            MyModel.set('editingShiftEndTime', moment(endTime).format('h:mma'))
+            MyModel.set('editingShiftEndDate', 'Choose...')
+            MyModel.set('editingShiftEndTime', 'Choose...')
             MyModel.set('selectedEndDate', moment().format('YYYY-MM-DD'));
             MyModel.set('selectedEndTime', moment(endTime).format('HH:mm'))
             editingShift.start_time = moment(startTime).format();
             editingShift.end_time = moment(endTime).format();
-            let compareA = moment(endTime);
-            var minutesWorked = compareA.diff(moment(startTime), 'minutes')
-            var hoursWorked = (minutesWorked/60).toFixed(2);
-            let minuteRate = parseFloat(MyModel.user.hourlyRate)/60;
-            let overtimeMinuteRate = parseFloat(MyModel.user.overtimeRate)/60;
+            // let compareA = moment(endTime);
+            // var minutesWorked = compareA.diff(moment(startTime), 'minutes')
+            // var hoursWorked = (minutesWorked/60).toFixed(2);
+            // let minuteRate = parseFloat(MyModel.user.hourlyRate)/60;
+            // let overtimeMinuteRate = parseFloat(MyModel.user.overtimeRate)/60;
 
-            let worked = shiftService.calculateShiftHoursWorked(editingShift.start_time, editingShift.end_time);;
-            MyModel.updateTotalEarned();
-            MyModel.set('endShiftTotalWorked', worked.time_worked);
+            // let worked = shiftService.calculateShiftHoursWorked(editingShift.start_time, editingShift.end_time);;
+            // MyModel.updateTotalEarned();
+            MyModel.set('hasSelectedStartAndEndTimes', false);
+            MyModel.set('endShiftTotalWorked', '0 HOURS');
         } else {
             editingShift = Object.assign({}, shift);
             MyModel.showSettings('/views/components/endshift/endshift.xml');
-            MyModel.set('settingsTitle', 'End Shift');
-            if (shift.end_time) {
-                MyModel.set('settingsTitle', 'Edit Shift');
-            }
+            MyModel.set('settingsTitle', 'Edit Shift');
             MyModel.set('editingShiftStartDate', moment(shift.start_time).format('MMM Do, YYYY'))
             MyModel.set('editingShiftStartTime', moment(shift.start_time).format('h:mma'))
             MyModel.set('selectedStartDate', moment(shift.start_time).format('YYYY-MM-DD'));
             MyModel.set('selectedStartTime', moment(shift.start_time).format('HH:mm'))
 
             MyModel.set('editingShiftEndDate', moment().format('MMM Do, YYYY'))
-            MyModel.set('editingShiftEndTime', moment().format('h:mma'))
+            MyModel.set('editingShiftEndTime', 'In progress...')
             MyModel.set('selectedEndDate', moment().format('YYYY-MM-DD'));
             MyModel.set('selectedEndTime', moment().format('HH:mm'))
             editingShift.end_time = moment().format();
             if (shift.end_time) {
+                console.log('show it all');
+                MyModel.set('hasSelectedStartAndEndTimes', true);
                 MyModel.set('editingShiftEndDate', moment(shift.end_time).format('MMM Do, YYYY'))
                 MyModel.set('editingShiftEndTime', moment(shift.end_time).format('h:mma'))
                 MyModel.set('selectedEndDate', moment(shift.end_time).format('YYYY-MM-DD'));
                 MyModel.set('selectedEndTime', moment(shift.end_time).format('HH:mm'))
                 editingShift.end_time = moment(shift.end_time).format();
+            } else {
+                MyModel.set('hasSelectedStartAndEndTimes', false);
             }
 
             // console.dir(shift.contributions);
@@ -880,6 +929,10 @@ export class HomeModel extends Observable {
                 }
             })
         }
+
+        if (MyModel.get('editingShiftStartDate') != 'Choose...' && MyModel.get('editingShiftEndDate') != 'Choose...' && MyModel.get('editingShiftStartTime') != 'Choose...' && MyModel.get('editingShiftEndTime') != 'Choose...' && MyModel.get('editingShiftEndTime') != 'In progress...') {
+            MyModel.set('hasSelectedStartAndEndTimes', true);
+        }
         
     }
 
@@ -977,6 +1030,10 @@ export class HomeModel extends Observable {
             if (parseInt(this.endDateMonth) < 10) month = '0' + parseInt(this.endDateMonth);
             this.set('selectedStartDate', this.endDateYear + '-' + month + '-' + day);
             MyModel.set('editingShiftStartDate', moment(this.get('selectedStartDate')).format('MMM Do, YYYY'))
+            if (MyModel.get('editingShiftEndDate') == 'Choose...') {
+                MyModel.set('editingShiftEndDate', moment(this.get('selectedStartDate')).format('MMM Do, YYYY'))
+                this.set('selectedEndDate', moment(this.get('selectedStartDate')).format('YYYY-MM-DD'));
+            }
             editingShift.start_time = moment(this.get('selectedStartDate') + ' ' + this.get('selectedStartTime') + ':00').format();
             this.updateTotalEarned()
         })
@@ -987,15 +1044,18 @@ export class HomeModel extends Observable {
         let end_time = this.get('selectedEndDate') + ' ' + this.get('selectedEndTime') + ':00';
         let start_time = this.get('selectedStartDate') + ' ' + this.get('selectedStartTime') + ':00';
         let args:any = {};
-        args.end_time = moment(end_time).format();
         args.start_time = moment(start_time).format();
-        args.contributions = {};
-        let contributions:any = {};
-        let families = this.get('families');
-        for (var i = 0; families.length > i; i++) {
-            contributions[families.getItem(i).get('id')] = families.getItem(i).get('contribution');
+        if (this.get('editingShiftEndTime') != 'In progress...') {
+            args.end_time = moment(end_time).format();
+            args.contributions = {};
+            let contributions:any = {};
+            let families = this.get('families');
+            for (var i = 0; families.length > i; i++) {
+                contributions[families.getItem(i).get('id')] = families.getItem(i).get('contribution');
+            }
+            args.contributions = contributions;
         }
-        args.contributions = contributions;
+        
         if (editingShift.id) {
             shiftService.updateShift(editingShift.id, args).then(result => {
                 this.processShifts(JSON.parse(appSettings.getString('shifts')));

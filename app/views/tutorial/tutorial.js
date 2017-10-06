@@ -1,0 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var tutorial_model_1 = require("./tutorial-model");
+function loaded(args) {
+    var page = args.object;
+    page.bindingContext = new tutorial_model_1.Tutorial();
+}
+exports.loaded = loaded;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidHV0b3JpYWwuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJ0dXRvcmlhbC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUVBLG1EQUE0QztBQUU1QyxnQkFBdUIsSUFBZTtJQUNsQyxJQUFJLElBQUksR0FBUyxJQUFJLENBQUMsTUFBTSxDQUFDO0lBRzdCLElBQUksQ0FBQyxjQUFjLEdBQUcsSUFBSSx5QkFBUSxFQUFFLENBQUM7QUFDekMsQ0FBQztBQUxELHdCQUtDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgRXZlbnREYXRhIH0gZnJvbSAnZGF0YS9vYnNlcnZhYmxlJztcbmltcG9ydCB7IFBhZ2UgfSBmcm9tICd1aS9wYWdlJztcbmltcG9ydCB7IFR1dG9yaWFsIH0gZnJvbSAnLi90dXRvcmlhbC1tb2RlbCc7XG5cbmV4cG9ydCBmdW5jdGlvbiBsb2FkZWQoYXJnczogRXZlbnREYXRhKSB7XG4gICAgbGV0IHBhZ2UgPSA8UGFnZT5hcmdzLm9iamVjdDtcblxuICAgXG4gICAgcGFnZS5iaW5kaW5nQ29udGV4dCA9IG5ldyBUdXRvcmlhbCgpO1xufSJdfQ==
